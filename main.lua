@@ -1,11 +1,9 @@
------------------------------------------------------------------------------------------
---
--- main.lua Sam was here
---
------------------------------------------------------------------------------------------
+-- Matt ___, Sam Martin, Patrick Berzins, ____, _____  
+--10/26/21 - added composer to go imediately to menu
 
--- Your code here
 
--- My name is matt
+local composer = require("composer")
 
--- no, this is patrick
+display.setStatusBar(display.HiddenStatusBar)
+
+composer.gotoScene("menu")
