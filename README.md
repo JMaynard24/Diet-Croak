@@ -1,2 +1,2 @@
 # Diet-Croak
-A simple lua-based mobile game about an extremely hungry frog catching flies.
+A simple lua-based mobile game about an extremely hungry frog catching flies...
