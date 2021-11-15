@@ -61,6 +61,35 @@ function scene:show( event )
       playButton:scale(.5,.5)
       sceneGroup:insert(playButton)
 
+      -- event handler function for options button
+      local function onOptionsButton(event)
+         
+         -- load the options_menu overlay scene
+         composer.showOverlay("options_main", {effect="fade", time=500, isModal=true})
+
+      end
+
+      -- options for options button
+      local optionsButtonOptions =
+      {
+         x = display.contentCenterX,
+         y = display.contentCenterY + 75,
+         label = "Options",
+         labelColor = {default = {1,1,1}, over = {1,1,1}},
+         font = "Arial",
+         fontSize = 60,
+         shape = "Rectangle",
+         width = 360,
+         height = 100,
+         fillColor = {default = {0,0,1}, over = {0,1,0}},
+         onEvent = onOptionsButton,
+      }
+
+      -- create an options button to bring up the options menu
+      local optionsButton = widget.newButton(optionsButtonOptions)
+      optionsButton:scale(.5,.5)
+      sceneGroup:insert(optionsButton)
+
       
 
 
