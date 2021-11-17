@@ -61,8 +61,34 @@ function scene:show( event )
       local dieButton = widget.newButton(dieButtonOptions)
       sceneGroup:insert(dieButton)
 
+      -- event handler function for options button
+      local function onOptionsButton(event)
 
+         -- load options_game overlay scene
+         composer.showOverlay("options_game", {effect="fade", time=500, isModal=true})
 
+      end
+
+      -- options for the options button
+      local optionsButtonOptions =
+      {
+         x = display.contentWidth - 100,
+         y = 50,
+         label = "Options",
+         font = "Arial",
+         fontSize = 50,
+         labelColor = {default = {1,1,1}, over = {1,1,1}},
+         shape = "Rectangle",
+         width = 360,
+         height = 100,
+         fillColor = {default = {0,0,1}, over = {0,1,0}},
+         onEvent = onOptionsButton,
+      }
+
+      -- add an options button to load options overlay menu
+      local optionsButton = widget.newButton(optionsButtonOptions)
+      optionsButton:scale(.5,.5)
+      sceneGroup:insert(optionsButton)
 
    elseif ( phase == "did" ) then
       -- Called when the scene is now on screen.
