@@ -32,7 +32,7 @@ function scene:show( event )
       -- Called when the scene is still off screen (but is about to come on screen).
 
       -- label the screen (this will be removed)
-      local screenLabel = display.newText("Game Screen", display.contentCenterX, display.contentCenterY, "Arial", 20)
+      local screenLabel = display.newText("Game Screen", display.contentCenterX, display.contentCenterY, "Arial", 40)
       sceneGroup:insert(screenLabel)
 
       -- function to be executed upon the player emptying the hunger bar and dying
@@ -47,8 +47,10 @@ function scene:show( event )
       local dieButtonOptions =
       {
          x = display.contentCenterX,
-         y = display.contentCenterY + 25,
+         y = display.contentCenterY + 50,
          label = "Die",
+         font = "Arial",
+         fontSize = 25,
          textOnly = true,
          labelColor = {default = {1,0,0}, over = {0,0,1}},
          onEvent = onDeath,

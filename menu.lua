@@ -29,7 +29,7 @@ function scene:show( event )
       local sceneGroup = self.view
 
       -- create a lable for the game title
-      local titleLabel = display.newText("Diet Croak", display.contentCenterX,display.contentCenterY - 200, "Arial", 40)
+      local titleLabel = display.newText("Diet Croak", display.contentCenterX,display.contentCenterY - 350, "Arial", 80)
       sceneGroup:insert(titleLabel)
 
       -- event handler function for the play button
@@ -58,7 +58,6 @@ function scene:show( event )
 
       -- create a play button to begin the game and move to the game screen
       local playButton = widget.newButton(playButtonOptions)
-      playButton:scale(.5,.5)
       sceneGroup:insert(playButton)
 
       -- event handler function for options button
@@ -73,7 +72,7 @@ function scene:show( event )
       local optionsButtonOptions =
       {
          x = display.contentCenterX,
-         y = display.contentCenterY + 75,
+         y = display.contentCenterY + 150,
          label = "Options",
          labelColor = {default = {1,1,1}, over = {1,1,1}},
          font = "Arial",
@@ -87,7 +86,6 @@ function scene:show( event )
 
       -- create an options button to bring up the options menu
       local optionsButton = widget.newButton(optionsButtonOptions)
-      optionsButton:scale(.5,.5)
       sceneGroup:insert(optionsButton)
 
       

@@ -32,13 +32,13 @@ function scene:show( event )
    if ( phase == "will" ) then
       -- Called when the scene is still off screen (but is about to come on screen).
 
-      -- create translucent rounded rectangle to use as background for the overlay scene
-      local backgroundRect = display.newRoundedRect(display.contentCenterX, display.contentCenterY + 50,250,400,10)
+      -- create rounded rectangle to use as background for the overlay scene
+      local backgroundRect = display.newRoundedRect(display.contentCenterX, display.contentCenterY + 50,400,700,10)
       backgroundRect:setFillColor(0,1,0)
       sceneGroup:insert(backgroundRect)
 
       -- add a text label at the top of the options menu
-      local optionsLabel = display.newText("Options", display.contentCenterX, display.contentCenterY - 125, "Arial", 30)
+      local optionsLabel = display.newText("Options", display.contentCenterX, display.contentCenterY - 250, "Arial", 50)
       optionsLabel:setFillColor(0,0,0)
       sceneGroup:insert(optionsLabel)
 
@@ -46,21 +46,21 @@ function scene:show( event )
       local difficultySliderOptions =
       {
          x = display.contentCenterX,
-         y = display.contentCenterY - 30,
-         width = 200,
+         y = display.contentCenterY - 140,
+         width = 300,
          value = 50,
       }
 
       -- create and label slider for game difficulty
-      local difficultySliderEasy = display.newText("Easy", 75, display.contentCenterY - 45, "Arial", 12)
+      local difficultySliderEasy = display.newText("Easy", 145, display.contentCenterY - 155, "Arial", 16)
       difficultySliderEasy:setFillColor(0,0,0)
       sceneGroup:insert(difficultySliderEasy)
-      local difficultySliderHard = display.newText("Hard", 245, display.contentCenterY - 45, "Arial", 12)
+      local difficultySliderHard = display.newText("Hard", 395, display.contentCenterY - 155, "Arial", 16)
       difficultySliderHard:setFillColor( 0,0,0)
       sceneGroup:insert(difficultySliderHard)
       local difficultySlider = widget.newSlider(difficultySliderOptions)
       sceneGroup:insert(difficultySlider)
-      local difficultySliderLabel = display.newText("Difficulty", display.contentCenterX, display.contentCenterY - 60, "Arial", 20)
+      local difficultySliderLabel = display.newText("Difficulty", display.contentCenterX, display.contentCenterY - 175, "Arial", 25)
       difficultySliderLabel:setFillColor(0,0,0)
       sceneGroup:insert(difficultySliderLabel)
 
@@ -68,15 +68,15 @@ function scene:show( event )
       local volumeSliderOptions =
       {
          x = display.contentCenterX,
-         y = display.contentCenterY + 30,
-         width = 200,
+         y = display.contentCenterY - 45,
+         width = 300,
          value = 100,
       }
 
       -- create and label slider for game volume
       local volumeSlider = widget.newSlider(volumeSliderOptions)
       sceneGroup:insert(volumeSlider)
-      local volumeSliderLabel = display.newText("Volume", display.contentCenterX, display.contentCenterY, "Arial", 20)
+      local volumeSliderLabel = display.newText("Volume", display.contentCenterX, display.contentCenterY - 75, "Arial", 25)
       volumeSliderLabel:setFillColor(0,0,0)
       sceneGroup:insert(volumeSliderLabel)
 
@@ -84,10 +84,10 @@ function scene:show( event )
       local howToInstructions = "Touch the screen to extend the frog's tounge, and release to retract it. Catch flies in the extended tounge, and avoid bees. If the hunger bar runs out it's game over, so keep the frog fed!"
 
       -- create text area with how-to instructions for the game
-      local howToLabel = display.newText("How to Play", display.contentCenterX, display.contentCenterY + 60, "Arial", 20)
+      local howToLabel = display.newText("How to Play", display.contentCenterX, display.contentCenterY + 30, "Arial", 25)
       howToLabel:setFillColor(0,0,0)
       sceneGroup:insert(howToLabel)
-      local howToText = display.newText(howToInstructions, display.contentCenterX, display.contentCenterY + 130, 200, 100, "Arial", 12)
+      local howToText = display.newText(howToInstructions, display.contentCenterX, display.contentCenterY + 160, 300, 200, "Arial", 20)
       howToText:setFillColor(0,0,0)
       sceneGroup:insert(howToText)
 
@@ -103,7 +103,7 @@ function scene:show( event )
       local closeButtonOptions =
       {
          x = display.contentCenterX,
-         y = display.contentCenterY + 210,
+         y = display.contentCenterY + 300,
          label = "Close",
          labelColor = {default = {1,1,1}, over = {1,1,1}},
          font = "Arial",
@@ -117,7 +117,7 @@ function scene:show( event )
 
       -- create button to close options menu
       local closeButton = widget.newButton(closeButtonOptions)
-      closeButton:scale(.3,.3)
+      closeButton:scale(.5,.5)
       sceneGroup:insert(closeButton)
 
    elseif ( phase == "did" ) then

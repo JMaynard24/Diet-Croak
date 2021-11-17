@@ -32,11 +32,11 @@ function scene:show( event )
       -- Called when the scene is still off screen (but is about to come on screen).
 
       -- display game over message
-      local screenLabel = display.newText("Game Over", display.contentCenterX, display.contentCenterY - 200, "Arial", 40)
+      local screenLabel = display.newText("Game Over", display.contentCenterX, display.contentCenterY - 350, "Arial", 60)
       sceneGroup:insert(screenLabel)
 
       -- display score
-      local scoreLabel = display.newText("Score: ", display.contentCenterX, display.contentCenterY - 150, "Arial", 20)
+      local scoreLabel = display.newText("Score: ", display.contentCenterX, display.contentCenterY - 285, "Arial", 30)
       sceneGroup:insert(scoreLabel)
 
       -- event handler for retry button
@@ -51,7 +51,7 @@ function scene:show( event )
       local retryButtonOptions =
       {
       	x = display.contentCenterX,
-      	y = display.contentCenterY + 175,
+      	y = display.contentCenterY + 300,
       	label = "Retry",
       	labelColor = {default = {1,1,1}, over = {1,1,1}},
       	font = "Arial",
@@ -65,7 +65,7 @@ function scene:show( event )
 
       -- create a button to retry the game
       local retryButton = widget.newButton(retryButtonOptions)
-      retryButton:scale(.25,.25)
+      retryButton:scale(.6,.6)
       sceneGroup:insert(retryButton)
 
       -- event handler for menu button
@@ -80,7 +80,7 @@ function scene:show( event )
       local menuButtonOptions =
       {
       	x = display.contentCenterX,
-      	y = display.contentCenterY + 225,
+      	y = display.contentCenterY + 375,
       	label = "Main Menu",
       	labelColor = {default = {1,1,1}, over = {1,1,1}},
       	font = "Arial",
@@ -94,7 +94,7 @@ function scene:show( event )
 
       -- create a button to return to the main menu
       local menuButton = widget.newButton(menuButtonOptions)
-      menuButton:scale( .25, .25 )
+      menuButton:scale( .6, .6 )
       sceneGroup:insert(menuButton)
 
 
