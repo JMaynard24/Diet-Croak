@@ -28,7 +28,7 @@ function scene:show( event )
 
       local sceneGroup = self.view
 
-      -- create a lable for the game title
+      -- create a label for the game title
       local titleLabel = display.newText("Diet Croak", display.contentCenterX,display.contentCenterY - 350, "Arial", 80)
       sceneGroup:insert(titleLabel)
 
