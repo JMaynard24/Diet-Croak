@@ -2,7 +2,12 @@
 
 local widget = require("widget")
 local composer = require( "composer" )
+local physics = require( "physics" )
+local Bug = require("bug")
+local Bee = require("bee")
 local scene = composer.newScene()
+physics.setGravity(0, 0)
+physics.start()
  
 ---------------------------------------------------------------------------------
 -- All code outside of the listener functions will only be executed ONCE
@@ -35,6 +40,9 @@ function scene:create( event )
 	frog_sheet = graphics.newImageSheet("Spritesheet1.png", frog_opt);
 	sheet = frog_sheet;
 	sequenceData = frog_sequenceData;
+	
+	spawnPoints = { {{-100, 110}, {-100, 210}, {-100, 310}, {-100, 410}, {-100, 510}},
+					{{640, 110}, {640, 210}, {640, 310}, {640, 410}, {640, 510}}}
    
 end
  
@@ -43,6 +51,7 @@ function scene:show( event )
  
 	local sceneGroup = self.view
 	local phase = event.phase
+	bugSpawnTimer = 1000
 	
 	function screenTouched(event)
 		if (event.phase == "began" and allowTongue) then
@@ -72,6 +81,37 @@ function scene:show( event )
 	
 	function stopTongue()
 		allowTongue = true
+	end
+	
+	function spawnBug(event)
+		side = math.random(1,2)
+		row = math.random(1,5)
+		target = math.random(1,5)
+		speed = (math.random(10, 25) / 10) * 1000
+		x = 0
+		y = 0
+		pos = {0, 0}
+		if side == 1 then
+			x = spawnPoints[1][row][1]
+			y = spawnPoints[1][row][2]
+			pos[1] = spawnPoints[2][target][1]
+			pos[2] = spawnPoints[2][target][2]
+		else
+			x = spawnPoints[2][row][1]
+			y = spawnPoints[2][row][2]
+			pos[1] = spawnPoints[1][target][1]
+			pos[2] = spawnPoints[1][target][2]
+		end
+		bugorbee = math.random(1, 2)
+		if bugorbee == 1 then
+			bug = Bee:new({xPos=x, yPos=y})
+		else
+			bug = Bug:new({xPos=x, yPos=y})
+		end
+		bug:spawn()
+		bug:goTo(pos[1], pos[2], speed)
+		sceneGroup:insert(bug.shape)
+		timer.performWithDelay(bugSpawnTimer, spawnBug)
 	end
  
 	if ( phase == "will" ) then
@@ -146,6 +186,7 @@ function scene:show( event )
 		optionsButton:scale(.5,.5)
 		sceneGroup:insert(optionsButton)
 	elseif ( phase == "did" ) then
+		timer.performWithDelay(bugSpawnTimer, spawnBug)
 		  -- Called when the scene is now on screen.
 		  -- Insert code here to make the scene come alive.
 		  -- Example: start timers, begin animation, play audio, etc.
