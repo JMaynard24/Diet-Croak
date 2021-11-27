@@ -36,7 +36,9 @@ function scene:show( event )
       local function onPlayButton(event)
 
          -- go to the game screen
-         composer.gotoScene("game")
+		 if event.phase == "began" then
+			composer.gotoScene("game")
+		 end
 
       end
 
@@ -64,7 +66,9 @@ function scene:show( event )
       local function onOptionsButton(event)
          
          -- load the options_menu overlay scene
-         composer.showOverlay("options_main", {effect="fade", time=500, isModal=true})
+		 if event.phase == "began" then
+			composer.showOverlay("options_main", {effect="fade", time=500, isModal=true})
+		 end
 
       end
 

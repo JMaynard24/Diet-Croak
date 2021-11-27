@@ -73,7 +73,9 @@ function scene:show( event )
       local function onCloseButton(event)
 
          -- hide the options_main overlay
-         composer.hideOverlay("fade", 150)
+		 if event.phase == "began" then
+			composer.hideOverlay("fade", 150)
+		 end
 
       end
 

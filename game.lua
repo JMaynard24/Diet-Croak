@@ -6,8 +6,9 @@ local physics = require( "physics" )
 local Bug = require("bug")
 local Bee = require("bee")
 local scene = composer.newScene()
-physics.setGravity(0, 0)
 physics.start()
+physics.setGravity(0, 0)
+sceneGroup = nil
  
 ---------------------------------------------------------------------------------
 -- All code outside of the listener functions will only be executed ONCE
@@ -18,11 +19,41 @@ physics.start()
  
 ---------------------------------------------------------------------------------
 
+function spawnBug(event)
+	side = math.random(1,2)
+	row = math.random(1,5)
+	target = math.random(1,5)
+	speed = (math.random(10, 25) / 10) * 1000
+	x = 0
+	y = 0
+	pos = {0, 0}
+	if side == 1 then
+		x = spawnPoints[1][row][1]
+		y = spawnPoints[1][row][2]
+		pos[1] = spawnPoints[2][target][1]
+		pos[2] = spawnPoints[2][target][2]
+	else
+		x = spawnPoints[2][row][1]
+		y = spawnPoints[2][row][2]
+		pos[1] = spawnPoints[1][target][1]
+		pos[2] = spawnPoints[1][target][2]
+	end
+	bugorbee = math.random(1, 2)
+	if bugorbee == 1 then
+		bug = Bee:new({xPos=x, yPos=y})
+	else
+		bug = Bug:new({xPos=x, yPos=y})
+	end
+	bug:spawn()
+	bug:goTo(pos[1], pos[2], speed)
+	sceneGroup:insert(bug.shape)
+	timer.performWithDelay(bugSpawnTimer, spawnBug)
+end
 
 -- "scene:create()"
 function scene:create( event )
 
-	local sceneGroup = self.view
+	sceneGroup = self.view
 	frog_opt = {
 					frames = {
 							{x=1, y=1, width = 320, height = 304},
@@ -82,39 +113,9 @@ function scene:show( event )
 	function stopTongue()
 		allowTongue = true
 	end
-	
-	function spawnBug(event)
-		side = math.random(1,2)
-		row = math.random(1,5)
-		target = math.random(1,5)
-		speed = (math.random(10, 25) / 10) * 1000
-		x = 0
-		y = 0
-		pos = {0, 0}
-		if side == 1 then
-			x = spawnPoints[1][row][1]
-			y = spawnPoints[1][row][2]
-			pos[1] = spawnPoints[2][target][1]
-			pos[2] = spawnPoints[2][target][2]
-		else
-			x = spawnPoints[2][row][1]
-			y = spawnPoints[2][row][2]
-			pos[1] = spawnPoints[1][target][1]
-			pos[2] = spawnPoints[1][target][2]
-		end
-		bugorbee = math.random(1, 2)
-		if bugorbee == 1 then
-			bug = Bee:new({xPos=x, yPos=y})
-		else
-			bug = Bug:new({xPos=x, yPos=y})
-		end
-		bug:spawn()
-		bug:goTo(pos[1], pos[2], speed)
-		sceneGroup:insert(bug.shape)
-		timer.performWithDelay(bugSpawnTimer, spawnBug)
-	end
  
 	if ( phase == "will" ) then
+		print("game scene")
 		local waterfall = display.newImage("waterfall.png", display.contentCenterX, display.contentCenterY)
 		-- Called when the scene is still off screen (but is about to come on screen).
 		anim = display.newSprite(frog_sheet, sequenceData);
@@ -161,7 +162,9 @@ function scene:show( event )
 		local function onOptionsButton(event)
 
 			-- load options_game overlay scene
-			composer.showOverlay("options_game", {effect="fade", time=500, isModal=true})
+			if event.phase == "began" then
+				composer.showOverlay("options_game", {effect="fade", time=500, isModal=true})
+			end
 
 		end
 

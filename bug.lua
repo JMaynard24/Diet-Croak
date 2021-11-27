@@ -24,10 +24,10 @@ function Bug:goTo(destX, destY, t)
 			time = t,
 			x = destX,
 			y = destY,
+			onComplete = del
 			}
 			
 	transition.to(self.shape, opt)
-	print("moving!")
 end
 
 function Bug:caught()
@@ -35,9 +35,13 @@ function Bug:caught()
 end
 
 function Bug:delete()
-	print("done!")
 	self.shape:removeSelf()
 	self = nil
 end
+
+function del(obj)
+	obj.pp:delete()
+end
+	
 
 return Bug
