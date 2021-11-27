@@ -96,22 +96,27 @@ function scene:show( event )
 			tongue:scale(0.6, .06)
 			tongue.x = display.contentCenterX;
 			tongue.y = 864;
-			tongue:setSequence("tongue")
-			sceneGroup:insert(tongue)
+			event_xDifference = event.x - display.contentCenterX
 			event_yDifference = tongue.y-event.y
-			scaleMax = event_yDifference / 416
-			transition.scaleTo(tongue, {xScale=.4, yScale=scaleMax, transition=linear, time=500*scaleMax})
+			scaleMaxSquared = event_xDifference^2 + event_yDifference^2
+			scaleMaxSqrt = math.sqrt(scaleMaxSquared)
+			scaleMax = scaleMaxSqrt / 415
+			rotationTongue = math.tan(event_xDifference/event_yDifference)
+			tongue:rotate(rotationTongue*57.28)
+			tongue:setSequence("tongue")
+			transition.scaleTo(tongue, {xScale=.4, yScale=scaleMax, transition=linear, time=400*scaleMax})
 		elseif (event.phase == "ended" and tongueExist) then
 			print("event")
 			transition.cancel(tongue)
-			anim:setSequence("idle")
-			transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=500*scaleMax, onComplete= stopTongue})
+			transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
 			tongueExist = false
 		end
 	end
 	
 	function stopTongue()
 		allowTongue = true
+		tongue:removeSelf( )
+		anim:setSequence("idle")
 	end
  
 	if ( phase == "will" ) then
