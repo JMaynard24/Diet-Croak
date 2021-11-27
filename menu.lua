@@ -22,6 +22,7 @@ function scene:show( event )
    local phase = event.phase
  
    if ( phase == "will" ) then
+		print("menu scene")
       -- Initialize the scene here.
       -- Example: add display objects to "sceneGroup", add touch listeners, etc.
       -- Called when the scene is still off screen (but is about to come on screen).

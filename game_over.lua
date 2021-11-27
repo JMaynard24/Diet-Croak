@@ -32,6 +32,7 @@ function scene:show( event )
       -- Called when the scene is still off screen (but is about to come on screen).
 
       -- display game over message
+	  print("game over scene")
       local screenLabel = display.newText("Game Over", display.contentCenterX, display.contentCenterY - 350, "Arial", 60)
       sceneGroup:insert(screenLabel)
 
@@ -43,7 +44,9 @@ function scene:show( event )
       local function onRetryButton(event)
 
       	-- go to game screen
-      	composer.gotoScene("game")
+		if event.phase == "began" then
+			composer.gotoScene("game")
+		end
 
       end
 
@@ -72,7 +75,9 @@ function scene:show( event )
       local function onMenuButton(event)
 
       	-- go to menu screen
-      	composer.gotoScene("menu")
+		if event.phase == "began" then
+			composer.gotoScene("menu")
+		end
 
       end
 

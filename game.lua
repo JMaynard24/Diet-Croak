@@ -122,6 +122,7 @@ function scene:show( event )
 	if ( phase == "will" ) then
 		print("game scene")
 		local waterfall = display.newImage("waterfall.png", display.contentCenterX, display.contentCenterY)
+		sceneGroup:insert(waterfall)
 		-- Called when the scene is still off screen (but is about to come on screen).
 		anim = display.newSprite(frog_sheet, sequenceData);
 		anim.anchorX = .5;
@@ -143,7 +144,9 @@ function scene:show( event )
 		-- function to be executed upon the player emptying the hunger bar and dying
 		local function onDeath(event)
 			-- go to the game over screen
-			composer.gotoScene("game_over")
+			if event.phase == "began" then
+				composer.gotoScene("game_over")
+			end
 		end 
 
 		-- create options for die button (this will be removed)
