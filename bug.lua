@@ -12,6 +12,7 @@ end
 function Bug:spawn()
 	bugCollisionFilter = { categoryBits=2, maskBits=1 }
 	self.shape = display.newRect(self.xPos, self.yPos, 64, 64)
+	self.shape.tag = "bug"
 	self.shape:setFillColor(1, 0, 0)
 	physics.addBody(self.shape, "dynamic", {bounce = 0, filter=bugCollisionFilter})
 	self.shape.isFixedRotation = true
