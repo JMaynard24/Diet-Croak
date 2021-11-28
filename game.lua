@@ -11,8 +11,10 @@ physics.setGravity(0, 0)
 physics.setDrawMode("hybrid")
 sceneGroup = nil
 timer1 = nil
+tongueGroup = display.newGroup()
 caughtBugs = {}
 id = 0
+grabbing = true
  
 ---------------------------------------------------------------------------------
 -- All code outside of the listener functions will only be executed ONCE
@@ -85,6 +87,7 @@ function screenTouched(event)
 		transition.scaleTo(tongue, {xScale=.4, yScale=scaleMax, transition=linear, time=400*scaleMax})
 		transition.to(tongueHitbox, {x=event.x, y=event.y, time=400*scaleMax})
 	elseif (event.phase == "ended" and tongueExist) then
+		grabbing = false
 		print("event")
 		transition.cancel(tongue)
 		transition.cancel(tongueHitbox)
@@ -116,6 +119,7 @@ local function onOptionsButton(event)
 end
 
 function stopTongue()
+	grabbing = true
 	allowTongue = true
 	tongue:removeSelf( )
 	anim:setSequence("idle")
@@ -170,7 +174,7 @@ function scene:create( event )
 	end
 	
 	function grabBug(self, event)
-		if event.other.tag == "bug" then
+		if event.other.tag == "bug" and grabbing then
 			event.other.pp:caught()
 			event.other.pp.id = id
 			caughtBugs[id] = event.other.pp
@@ -198,6 +202,7 @@ function scene:create( event )
 	
 	tongueHitbox = display.newRect(display.contentCenterX, 864, 40, 1000)
 	tongueHitbox.isVisible = false
+	tongueGroup:insert(tongueHitbox)
 	tongueHitbox.anchorX = .5
 	tongueHitbox.anchorY = 0
 	physics.addBody(tongueHitbox, "dynamic", {isSensor=true})
