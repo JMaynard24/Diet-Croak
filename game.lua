@@ -8,13 +8,19 @@ local Bee = require("bee")
 local scene = composer.newScene()
 physics.start()
 physics.setGravity(0, 0)
-physics.setDrawMode("hybrid")
+--physics.setDrawMode("hybrid")
 sceneGroup = nil
 timer1 = nil
 tongueGroup = display.newGroup()
 caughtBugs = {}
 id = 0
 grabbing = true
+
+soundtable = 
+{
+	runningWater = audio.loadSound("stream1.ogg"),
+	backgroundMusic = audio.loadSound("forest.mp3")
+}
  
 ---------------------------------------------------------------------------------
 -- All code outside of the listener functions will only be executed ONCE
@@ -264,6 +270,22 @@ function scene:show( event )
 		allowTongue = true
 		tongueExist = false
 	elseif ( phase == "did" ) then
+		audio.setVolume( 0.4, { channel=1 } )
+		local options =
+		{
+			channel = 1,
+			loops = -1,
+			fadein = 2000,
+		}
+		audio.play(soundtable["runningWater"], options)
+		audio.setVolume( 0.75, { channel=2 } )
+		local options =
+		{
+			channel = 2,
+			loops = -1,
+			fadein = 2000,
+		}
+		audio.play(soundtable["backgroundMusic"], options)
 		timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
 	end
 end
