@@ -2,6 +2,20 @@ local physics = require("physics")
 
 local Bug = {name="Bug", xPos=0, yPos=0}
 
+bug_opt = {
+					frames = {
+							{x=1, y=1, width = 264, height = 224}
+					}
+				}
+
+	bug_sequenceData = {
+						{name = "idle", frames = {1}, time = 1000, loopCount = 1}}
+						
+
+	bug_sheet = graphics.newImageSheet("fly.png", bug_opt);
+	bugsheet = bug_sheet;
+	bugsequenceData = bug_sequenceData;
+
 function Bug:new(o)
 	o = o or {}
 	setmetatable(o, self)
@@ -11,9 +25,11 @@ end
 
 function Bug:spawn()
 	bugCollisionFilter = { categoryBits=2, maskBits=1 }
-	self.shape = display.newRect(self.xPos, self.yPos, 64, 64)
+	self.shape = display.newSprite(bugsheet, bugsequenceData)
 	self.shape.tag = "bug"
-	self.shape:setFillColor(1, 0, 0)
+	self.shape.width=32
+	self.shape.height=32
+	--self.shape:setFillColor(1, 0, 0)
 	physics.addBody(self.shape, "dynamic", {bounce = 0, filter=bugCollisionFilter})
 	self.shape.isFixedRotation = true
 	self.shape.pp = self

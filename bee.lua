@@ -2,11 +2,26 @@ local Bug = require("bug")
 
 local Bee = Bug:new()
 
+bee_opt = {
+					frames = {
+							{x=1, y=1, width = 264, height = 224}
+					}
+				}
+
+	bee_sequenceData = {
+						{name = "idle", frames = {1}, time = 1000, loopCount = 1}}
+						
+
+	bee_sheet = graphics.newImageSheet("bee.png", bee_opt);
+	beesheet = bee_sheet;
+	beesequenceData = bee_sequenceData;
+
 function Bee:spawn()
 	bugCollisionFilter = { categoryBits=2, maskBits=1 }
-	self.shape = display.newRect(self.xPos, self.yPos, 64, 64)
+	self.shape = display.newSprite(beesheet, beesequenceData)
 	self.shape.tag = "bee"
-	self.shape:setFillColor(0, 0, 1)
+	self.shape.width=32
+	self.shape.height=32
 	physics.addBody(self.shape, "dynamic", {bounce = 0, filter=bugCollisionFilter})
 	self.shape.pp = self
 end

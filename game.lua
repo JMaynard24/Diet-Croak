@@ -8,7 +8,7 @@ local Bee = require("bee")
 local scene = composer.newScene()
 physics.start()
 physics.setGravity(0, 0)
-physics.setDrawMode("hybrid")
+--physics.setDrawMode("hybrid")
 sceneGroup = nil
 timer1 = nil
 caughtBugs = {}
