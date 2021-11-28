@@ -85,7 +85,7 @@ function scene:show( event )
 	bugSpawnTimer = 1000
 	
 	function screenTouched(event)
-		if (event.phase == "began" and allowTongue) then
+		if (event.phase == "began" and allowTongue and event.y < 540) then
 			tongueExist = true
 			anim:setSequence("shoot")
 			allowTongue = false
@@ -100,9 +100,9 @@ function scene:show( event )
 			event_yDifference = tongue.y-event.y
 			scaleMaxSquared = event_xDifference^2 + event_yDifference^2
 			scaleMaxSqrt = math.sqrt(scaleMaxSquared)
-			scaleMax = scaleMaxSqrt / 415
-			rotationTongue = math.tan(event_xDifference/event_yDifference)
-			tongue:rotate(rotationTongue*57.28)
+			scaleMax = scaleMaxSqrt / 416
+			rotationTongue = math.sin(event_xDifference/scaleMaxSqrt)
+			tongue:rotate(rotationTongue*63)
 			tongue:setSequence("tongue")
 			transition.scaleTo(tongue, {xScale=.4, yScale=scaleMax, transition=linear, time=400*scaleMax})
 		elseif (event.phase == "ended" and tongueExist) then
