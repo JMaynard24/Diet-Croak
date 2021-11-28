@@ -17,7 +17,6 @@ local options =
 {
 	channel = 1,
 	loops = -1,
-	fadein = 2000,
 }
 audio.play(soundtable["runningWater"], options)
 
@@ -26,7 +25,6 @@ local options =
 {
 	channel = 2,
 	loops = -1,
-	fadein = 2000,
 }
 audio.play(soundtable["backgroundMusic"], options)
 
