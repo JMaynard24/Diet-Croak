@@ -6,10 +6,26 @@ local composer = require("composer")
 local scene = composer.newScene()
 display.setStatusBar(display.HiddenStatusBar)
 
+-- event handler function for options button
+local function onOptionsButton(event)
+	-- load the options_menu overlay scene
+	if event.phase == "began" then
+		composer.showOverlay("options_main", {effect="fade", time=500, isModal=true})
+	end
+end
+
+local function onPlayButton(event)
+	 -- go to the game screen
+	if event.phase == "began" then
+		composer.gotoScene("game")
+	end
+end
+
 
 
 function scene:create( event )
 	-- options for play button
+	local sceneGroup = self.view
     local playButtonOptions = 
     {
         x = display.contentCenterX,
@@ -28,14 +44,6 @@ function scene:create( event )
     -- create a play button to begin the game and move to the game screen
     local playButton = widget.newButton(playButtonOptions)
     sceneGroup:insert(playButton)
-
-    -- event handler function for options button
-    local function onOptionsButton(event)
-        -- load the options_menu overlay scene
-		if event.phase == "began" then
-			composer.showOverlay("options_main", {effect="fade", time=500, isModal=true})
-		end
-    end
 
     -- options for options button
     local optionsButtonOptions =
@@ -73,14 +81,6 @@ function scene:show( event )
 		-- create a label for the game title
 		local titleLabel = display.newText("Diet Croak", display.contentCenterX,display.contentCenterY - 350, "Arial", 80)
 		sceneGroup:insert(titleLabel)
-
-		-- event handler function for the play button
-		local function onPlayButton(event)
-
-         -- go to the game screen
-		if event.phase == "began" then
-			composer.gotoScene("game")
-		end
 
     elseif ( phase == "did" ) then
       -- Called when the scene is now on screen.
