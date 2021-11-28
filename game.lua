@@ -12,6 +12,7 @@ physics.setDrawMode("hybrid")
 sceneGroup = nil
 timer1 = nil
 caughtBugs = {}
+id = 0
  
 ---------------------------------------------------------------------------------
 -- All code outside of the listener functions will only be executed ONCE
@@ -89,7 +90,7 @@ function screenTouched(event)
 		transition.cancel(tongueHitbox)
 		transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
 		transition.to(tongueHitbox, {x=tongue.x, y=tongue.y, time=300*scaleMax})
-		for _, bug in ipairs(caughtBugs) do
+		for _, bug in pairs(caughtBugs) do
 			transition.to(bug.shape, {x=tongue.x, y=tongue.y, time=300*scaleMax})
 		end
 		tongueExist = false
@@ -163,6 +164,7 @@ function scene:create( event )
 	
 	function eatBug(self, event)
 		if event.other.tag == "bug" then
+			caughtBugs[event.other.pp.id] = nil
 			event.other.pp:delete()
 		end
 	end
@@ -170,12 +172,14 @@ function scene:create( event )
 	function grabBug(self, event)
 		if event.other.tag == "bug" then
 			event.other.pp:caught()
-			table.insert(caughtBugs, event.other.pp)
+			event.other.pp.id = id
+			caughtBugs[id] = event.other.pp
+			id = id + 1
 		elseif event.other.tag == "bee" then
-			for _, bug in ipairs(caughtBugs) do
+			for _, bug in pairs(caughtBugs) do
+				caughtBugs[bug.id] = nil
 				bug:delete()
 			end
-			caughtBugs = {}
 			transition.cancel(tongue)
 			transition.cancel(tongueHitbox)
 			transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
