@@ -163,8 +163,12 @@ function scene:create( event )
 	waterfall:addEventListener("touch", screenTouched)
 
 	-- add a text field for the score
-	scoreText = display.newText("Score: " .. score, display.contentCenterX, 30, native.systemFontBold, 40)
+	scoreText = display.newEmbossedText("Score: " .. score, display.contentCenterX, 30, native.systemFontBold, 40)
 	scoreText:setFillColor(1,1,1)
+	local color = 
+	{  	highlight = { r=0, g=0, b=0 },
+    	shadow = { r=0.2, g=0.2, b=0.2 }}
+	scoreText:setEmbossColor(color)
 	sceneGroup:insert(scoreText)
 	
 	function eatBug(self, event)
