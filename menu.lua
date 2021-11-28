@@ -10,7 +10,7 @@ display.setStatusBar(display.HiddenStatusBar)
 local function onOptionsButton(event)
 	-- load the options_menu overlay scene
 	if event.phase == "began" then
-		composer.showOverlay("options_main", {effect="fade", time=500, isModal=true})
+		composer.showOverlay("options", {effect="fade", time=500, isModal=true})
 	end
 end
 
@@ -20,7 +20,6 @@ local function onPlayButton(event)
 		composer.gotoScene("game")
 	end
 end
-
 
 
 function scene:create( event )
