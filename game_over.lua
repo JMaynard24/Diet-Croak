@@ -149,11 +149,9 @@ function addScore(score)
 end
 
 -- event handler for score button
-function updateScores()
+function updateScores(newScore)
 
    -- add new score to the leaderboard (if it is top ten)
-   --local newScore = params.score
-   local newScore = 50
    addScore(newScore)
             
    -- update the leaderboard on the screen with the current top scores
@@ -186,13 +184,12 @@ function scene:show( event )
  
    local sceneGroup = self.view
    local phase = event.phase
+   local params = event.params
  
    if ( phase == "will" ) then
       -- Called when the scene is still off screen (but is about to come on screen).
 
-      --local params = event.params
-
-      updateScores()
+      updateScores(params.userScore)
 
 
    elseif ( phase == "did" ) then

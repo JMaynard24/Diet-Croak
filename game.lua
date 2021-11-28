@@ -15,6 +15,7 @@ tongueGroup = display.newGroup()
 caughtBugs = {}
 id = 0
 grabbing = true
+score = 0
 
 soundtable = 
 {
@@ -109,18 +110,8 @@ end
 local function onDeath(event)
 	-- go to the game over screen
 	if event.phase == "began" then
-		composer.gotoScene("game_over")
+		composer.gotoScene("game_over", {params = {userScore = score}})
 	end
-end
-
--- event handler function for options button
-local function onOptionsButton(event)
-
-	-- load options_game overlay scene
-	if event.phase == "began" then
-		composer.showOverlay("options_game", {effect="fade", time=500, isModal=true})
-	end
-
 end
 
 function stopTongue()
@@ -170,11 +161,18 @@ function scene:create( event )
 	sceneGroup:insert(anim)
 	waterfall:toBack()
 	waterfall:addEventListener("touch", screenTouched)
+
+	-- add a text field for the score
+	scoreText = display.newText("Score: " .. score, display.contentCenterX, 30, native.systemFontBold, 40)
+	scoreText:setFillColor(1,1,1)
+	sceneGroup:insert(scoreText)
 	
 	function eatBug(self, event)
 		if event.other.tag == "bug" then
 			caughtBugs[event.other.pp.id] = nil
 			event.other.pp:delete()
+			score = score+1
+			scoreText.text = "Score: " .. score
 		end
 	end
 	
@@ -234,27 +232,6 @@ function scene:create( event )
 	-- add a button to simulate dying and game over (this will be removed)
 	local dieButton = widget.newButton(dieButtonOptions)
 	sceneGroup:insert(dieButton)
-	
-		-- options for the options button
-	local optionsButtonOptions =
-	{
-		x = display.contentWidth - 100,
-		y = 50,
-		label = "Options",
-		font = "Arial",
-		fontSize = 50,
-		labelColor = {default = {1,1,1}, over = {1,1,1}},
-		shape = "Rectangle",
-		width = 360,
-		height = 100,
-		fillColor = {default = {0,0,1}, over = {0,1,0}},
-		onEvent = onOptionsButton,
-	}
-
-	-- add an options button to load options overlay menu
-	local optionsButton = widget.newButton(optionsButtonOptions)
-	optionsButton:scale(.5,.5)
-	sceneGroup:insert(optionsButton)
    
 end
 
@@ -265,6 +242,8 @@ function scene:show( event )
 	bugSpawnTimer = 1000
 	
 	if ( phase == "will" ) then
+		score = 0
+		scoreText.text = "Score: " .. score
 		print("game scene")
 		allowTongue = true
 		tongueExist = false
