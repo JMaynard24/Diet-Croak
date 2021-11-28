@@ -9,6 +9,7 @@ local scene = composer.newScene()
 physics.start()
 physics.setGravity(0, 0)
 sceneGroup = nil
+timer1 = nil
  
 ---------------------------------------------------------------------------------
 -- All code outside of the listener functions will only be executed ONCE
@@ -47,7 +48,7 @@ function spawnBug(event)
 	bug:spawn()
 	bug:goTo(pos[1], pos[2], speed)
 	sceneGroup:insert(bug.shape)
-	timer.performWithDelay(bugSpawnTimer, spawnBug)
+	timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
 end
 
 -- "scene:create()"
@@ -76,7 +77,60 @@ function scene:create( event )
 					{{640, 110}, {640, 210}, {640, 310}, {640, 410}, {640, 510}}}
    
 end
- 
+
+function screenTouched(event)
+	if (event.phase == "began" and allowTongue and event.y < 600) then
+		tongueExist = true
+		anim:setSequence("shoot")
+		allowTongue = false
+		--anim:play()
+		tongue = display.newSprite(frog_sheet, sequenceData);
+		tongue.anchorX = .5;
+		tongue.anchorY= 1;
+		tongue:scale(0.6, .06)
+		tongue.x = display.contentCenterX;
+		tongue.y = 864;
+		event_xDifference = event.x - display.contentCenterX
+		event_yDifference = tongue.y-event.y
+		scaleMaxSquared = event_xDifference^2 + event_yDifference^2
+		scaleMaxSqrt = math.sqrt(scaleMaxSquared)
+		scaleMax = scaleMaxSqrt / 416
+		rotationTongue = math.sin(event_xDifference/event_yDifference)
+		tongue:rotate(rotationTongue*57.298)
+		tongue:setSequence("tongue")
+		transition.scaleTo(tongue, {xScale=.4, yScale=scaleMax, transition=linear, time=400*scaleMax})
+	elseif (event.phase == "ended" and tongueExist) then
+		print("event")
+		transition.cancel(tongue)
+		transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
+		tongueExist = false
+	end
+end
+
+-- function to be executed upon the player emptying the hunger bar and dying
+local function onDeath(event)
+	-- go to the game over screen
+	if event.phase == "began" then
+		composer.gotoScene("game_over")
+	end
+end
+
+-- event handler function for options button
+local function onOptionsButton(event)
+
+	-- load options_game overlay scene
+	if event.phase == "began" then
+		composer.showOverlay("options_game", {effect="fade", time=500, isModal=true})
+	end
+
+end
+
+function stopTongue()
+	allowTongue = true
+	tongue:removeSelf( )
+	anim:setSequence("idle")
+end
+
 -- "scene:show()"
 function scene:show( event )
  
@@ -84,40 +138,6 @@ function scene:show( event )
 	local phase = event.phase
 	bugSpawnTimer = 1000
 	
-	function screenTouched(event)
-		if (event.phase == "began" and allowTongue and event.y < 600) then
-			tongueExist = true
-			anim:setSequence("shoot")
-			allowTongue = false
-			--anim:play()
-			tongue = display.newSprite(frog_sheet, sequenceData);
-			tongue.anchorX = .5;
-			tongue.anchorY= 1;
-			tongue:scale(0.6, .06)
-			tongue.x = display.contentCenterX;
-			tongue.y = 864;
-			event_xDifference = event.x - display.contentCenterX
-			event_yDifference = tongue.y-event.y
-			scaleMaxSquared = event_xDifference^2 + event_yDifference^2
-			scaleMaxSqrt = math.sqrt(scaleMaxSquared)
-			scaleMax = scaleMaxSqrt / 416
-			rotationTongue = math.sin(event_xDifference/event_yDifference)
-			tongue:rotate(rotationTongue*57.298)
-			tongue:setSequence("tongue")
-			transition.scaleTo(tongue, {xScale=.4, yScale=scaleMax, transition=linear, time=400*scaleMax})
-		elseif (event.phase == "ended" and tongueExist) then
-			print("event")
-			transition.cancel(tongue)
-			transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
-			tongueExist = false
-		end
-	end
-	
-	function stopTongue()
-		allowTongue = true
-		tongue:removeSelf( )
-		anim:setSequence("idle")
-	end
  
 	if ( phase == "will" ) then
 		print("game scene")
@@ -141,14 +161,6 @@ function scene:show( event )
 		local screenLabel = display.newText("Game Screen", display.contentCenterX, display.contentCenterY, "Arial", 40)
 		sceneGroup:insert(screenLabel)
 
-		-- function to be executed upon the player emptying the hunger bar and dying
-		local function onDeath(event)
-			-- go to the game over screen
-			if event.phase == "began" then
-				composer.gotoScene("game_over")
-			end
-		end 
-
 		-- create options for die button (this will be removed)
 		local dieButtonOptions =
 		{
@@ -165,16 +177,6 @@ function scene:show( event )
 		-- add a button to simulate dying and game over (this will be removed)
 		local dieButton = widget.newButton(dieButtonOptions)
 		sceneGroup:insert(dieButton)
-
-		-- event handler function for options button
-		local function onOptionsButton(event)
-
-			-- load options_game overlay scene
-			if event.phase == "began" then
-				composer.showOverlay("options_game", {effect="fade", time=500, isModal=true})
-			end
-
-		end
 
 		-- options for the options button
 		local optionsButtonOptions =
@@ -197,7 +199,7 @@ function scene:show( event )
 		optionsButton:scale(.5,.5)
 		sceneGroup:insert(optionsButton)
 	elseif ( phase == "did" ) then
-		timer.performWithDelay(bugSpawnTimer, spawnBug)
+		timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
 		  -- Called when the scene is now on screen.
 		  -- Insert code here to make the scene come alive.
 		  -- Example: start timers, begin animation, play audio, etc.
