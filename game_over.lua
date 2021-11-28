@@ -94,47 +94,42 @@ function scene:create( event )
       scoreTen = display.newText("10: " .. leaderboardTable[10], display.contentCenterX, display.contentCenterY + 200, "Arial", 30)
       sceneGroup:insert(scoreTen)
 
-      -- options for retry button
-      local retryButtonOptions =
+      local retryButtonTextOptions = 
       {
+         text ="Retry",
          x = display.contentCenterX,
-         y = display.contentCenterY + 300,
-         label = "Retry",
-         labelColor = {default = {1,1,1}, over = {1,1,1}},
+         y = display.contentCenterY+275,
          font = "Arial",
-         fontSize = 60,
-         shape = "Rectangle",
-         width = 360,
-         height = 100,
-         fillColor = {default = {0,1,0}, over = {0,0,1}},
-         onEvent = onRetryButton,
+         fontSize = 42
+
       }
 
-      -- create a button to retry the game
-      retryButton = widget.newButton(retryButtonOptions)
-      retryButton:scale(.6,.6)
-      sceneGroup:insert(retryButton)
+    -- create an options button to bring up the options menu
+    local retryButton = display.newImage("defaultbutton.png", display.contentCenterX, display.contentCenterY+275)
+    retryButton:scale(.6, .4)
+    retryButton:addEventListener( "touch", onRetryButton )
+    local retryButtonText = display.newText(retryButtonTextOptions)
+    sceneGroup:insert(retryButton)
+    sceneGroup:insert(retryButtonText)
 
-      -- options for menu button
-      local menuButtonOptions =
+
+      local menuButtonTextOptions = 
       {
+         text ="Main Menu",
          x = display.contentCenterX,
-         y = display.contentCenterY + 375,
-         label = "Main Menu",
-         labelColor = {default = {1,1,1}, over = {1,1,1}},
+         y = display.contentCenterY+375,
          font = "Arial",
-         fontSize = 60,
-         shape = "Rectangle",
-         width = 360,
-         height = 100,
-         fillColor = {default = {0,0,1}, over = {0,1,0}},
-         onEvent = onMenuButton,
+         fontSize = 42
+
       }
 
-      -- create a button to return to the main menu
-      menuButton = widget.newButton(menuButtonOptions)
-      menuButton:scale( .6, .6 )
-      sceneGroup:insert(menuButton)
+    -- create an options button to bring up the options menu
+    local menuButton = display.newImage("defaultbutton.png", display.contentCenterX, display.contentCenterY+375)
+    menuButton:scale(.6, .4)
+    menuButton:addEventListener( "touch", onMenuButton )
+    local menuButtonText = display.newText(menuButtonTextOptions)
+    sceneGroup:insert(menuButton)
+    sceneGroup:insert(menuButtonText)
 
 end
 
