@@ -19,7 +19,8 @@ grabbing = true
 soundtable = 
 {
 	runningWater = audio.loadSound("stream1.ogg"),
-	backgroundMusic = audio.loadSound("forest.mp3")
+	backgroundMusic = audio.loadSound("forest.mp3"),
+	beeSound = audio.loadSound("bee.wav")
 }
  
 ---------------------------------------------------------------------------------
@@ -278,6 +279,7 @@ function scene:show( event )
 			fadein = 2000,
 		}
 		audio.play(soundtable["runningWater"], options)
+		
 		audio.setVolume( 0.75, { channel=2 } )
 		local options =
 		{
@@ -286,6 +288,16 @@ function scene:show( event )
 			fadein = 2000,
 		}
 		audio.play(soundtable["backgroundMusic"], options)
+		
+		audio.setVolume( 0.2, { channel=3 } )
+		local options =
+		{
+			channel = 3,
+			loops = -1,
+			fadein = 2000,
+		}
+		audio.play(soundtable["beeSound"], options)
+		
 		timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
 	end
 end
