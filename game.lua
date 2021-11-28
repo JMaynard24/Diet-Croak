@@ -11,6 +11,7 @@ physics.setGravity(0, 0)
 physics.setDrawMode("hybrid")
 sceneGroup = nil
 timer1 = nil
+caughtBugs = {}
  
 ---------------------------------------------------------------------------------
 -- All code outside of the listener functions will only be executed ONCE
@@ -81,6 +82,9 @@ function screenTouched(event)
 		transition.cancel(tongueHitbox)
 		transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
 		transition.to(tongueHitbox, {x=tongue.x, y=tongue.y, time=300*scaleMax})
+		for _, bug in ipairs(caughtBugs) do
+			transition.to(bug.shape, {x=tongue.x, y=tongue.y, time=300*scaleMax})
+		end
 		tongueExist = false
 	end
 end
@@ -150,11 +154,32 @@ function scene:create( event )
 	waterfall:toBack()
 	waterfall:addEventListener("touch", screenTouched)
 	
+	function eatBug(self, event)
+		if event.other.tag == "bug" then
+			event.other.pp:delete()
+		end
+	end
+	
+	function grabBug(self, event)
+		if event.other.tag == "bug" then
+			event.other.pp:caught()
+			table.insert(caughtBugs, event.other.pp)
+		end
+	end
+	
+	mouthHitbox = display.newRect(display.contentCenterX, 854, 80, 80)
+	mouthHitbox.isVisible = false
+	physics.addBody(mouthHitbox, "dynamic", {isSensor=true})
+	mouthHitbox.collision = eatBug
+	mouthHitbox:addEventListener("collision")
+	
 	tongueHitbox = display.newRect(display.contentCenterX, 864, 40, 1000)
 	tongueHitbox.isVisible = false
 	tongueHitbox.anchorX = .5
 	tongueHitbox.anchorY = 0
 	physics.addBody(tongueHitbox, "dynamic", {isSensor=true})
+	tongueHitbox.collision = grabBug
+	tongueHitbox:addEventListener("collision")
 	
 	-- label the screen (this will be removed)
 	local screenLabel = display.newText("Game Screen", display.contentCenterX, display.contentCenterY, "Arial", 40)
@@ -222,6 +247,7 @@ function scene:hide( event )
 	local phase = event.phase
 	 
 	if ( phase == "will" ) then
+		timer.cancel(timer1)
 		-- Called when the scene is on screen (but is about to go off screen).
 		-- Insert code here to "pause" the scene.
 		-- Example: stop timers, stop animation, stop audio, etc.
