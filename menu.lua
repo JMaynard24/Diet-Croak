@@ -75,7 +75,8 @@ function scene:show( event )
 		local sceneGroup = self.view
 
 		-- create a label for the game title
-		local titleLabel = display.newText("Diet Croak", display.contentCenterX,display.contentCenterY - 350, "Arial", 80)
+		local titleLabel = display.newImage("CroakTitle.png", display.contentCenterX, display.contentCenterY-250)
+        titleLabel:scale(.47,.5)
 		sceneGroup:insert(titleLabel)
 
     elseif ( phase == "did" ) then
