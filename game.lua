@@ -2,7 +2,24 @@
 
 local widget = require("widget")
 local composer = require( "composer" )
+local physics = require( "physics" )
+local Bug = require("bug")
+local Bee = require("bee")
 local scene = composer.newScene()
+physics.start()
+physics.setGravity(0, 0)
+--physics.setDrawMode("hybrid")
+sceneGroup = nil
+timer1 = nil
+tongueGroup = display.newGroup()
+caughtBugs = {}
+id = 0
+grabbing = true
+
+soundtable = 
+{
+	beeSound = audio.loadSound("bee.wav")
+}
  
 ---------------------------------------------------------------------------------
 -- All code outside of the listener functions will only be executed ONCE
@@ -13,11 +30,112 @@ local scene = composer.newScene()
  
 ---------------------------------------------------------------------------------
 
+function spawnBug(event)
+	side = math.random(1,2)
+	row = math.random(1,5)
+	target = math.random(1,5)
+	speed = (math.random(10, 25) / 10) * 1000
+	x = 0
+	y = 0
+	pos = {0, 0}
+	if side == 1 then
+		x = spawnPoints[1][row][1]
+		y = spawnPoints[1][row][2]
+		pos[1] = spawnPoints[2][target][1]
+		pos[2] = spawnPoints[2][target][2]
+	else
+		x = spawnPoints[2][row][1]
+		y = spawnPoints[2][row][2]
+		pos[1] = spawnPoints[1][target][1]
+		pos[2] = spawnPoints[1][target][2]
+	end
+	bugorbee = math.random(1, 2)
+	if bugorbee == 1 then
+		bug = Bee:new({xPos=x, yPos=y})
+		bug:spawn()
+		if side == 1 then
+			bug:flip()
+		end
+	else
+		bug = Bug:new({xPos=x, yPos=y})
+		bug:spawn()
+		if side == 2 then
+			bug:flip()
+		end
+	end
+	bug:goTo(pos[1], pos[2], speed)
+	sceneGroup:insert(bug.shape)
+	timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
+end
+
+function screenTouched(event)
+	if (event.phase == "began" and allowTongue and event.y < 600) then
+		tongueExist = true
+		anim:setSequence("shoot")
+		allowTongue = false
+		--anim:play()
+		tongue = display.newSprite(frog_sheet, sequenceData);
+		tongue.anchorX = .5;
+		tongue.anchorY= 1;
+		tongue:scale(0.6, .06)
+		tongue.x = display.contentCenterX;
+		tongue.y = 864;
+		event_xDifference = event.x - display.contentCenterX
+		event_yDifference = tongue.y-event.y
+		scaleMaxSquared = event_xDifference^2 + event_yDifference^2
+		scaleMaxSqrt = math.sqrt(scaleMaxSquared)
+		scaleMax = scaleMaxSqrt / 416
+		rotationTongue = math.sin(event_xDifference/event_yDifference)
+		tongue:rotate(rotationTongue*57.298)
+		tongue:setSequence("tongue")
+		tongueHitbox:rotate(rotationTongue*57.298)
+		transition.scaleTo(tongue, {xScale=.4, yScale=scaleMax, transition=linear, time=400*scaleMax})
+		transition.to(tongueHitbox, {x=event.x, y=event.y, time=400*scaleMax})
+	elseif (event.phase == "ended" and tongueExist) then
+		grabbing = false
+		print("event")
+		transition.cancel(tongue)
+		transition.cancel(tongueHitbox)
+		transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
+		transition.to(tongueHitbox, {x=tongue.x, y=tongue.y, time=300*scaleMax})
+		for _, bug in pairs(caughtBugs) do
+			transition.to(bug.shape, {x=tongue.x, y=tongue.y, time=300*scaleMax})
+		end
+		tongueExist = false
+	end
+end
+
+-- function to be executed upon the player emptying the hunger bar and dying
+local function onDeath(event)
+	-- go to the game over screen
+	if event.phase == "began" then
+		composer.gotoScene("game_over")
+	end
+end
+
+-- event handler function for options button
+local function onOptionsButton(event)
+
+	-- load options_game overlay scene
+	if event.phase == "began" then
+		composer.showOverlay("options_game", {effect="fade", time=500, isModal=true})
+	end
+
+end
+
+function stopTongue()
+	grabbing = true
+	allowTongue = true
+	tongue:removeSelf( )
+	anim:setSequence("idle")
+	tongueHitbox:rotate(-(rotationTongue*57.298))
+end
+
 
 -- "scene:create()"
 function scene:create( event )
 
-	local sceneGroup = self.view
+	sceneGroup = self.view
 	frog_opt = {
 					frames = {
 							{x=1, y=1, width = 320, height = 304},
@@ -35,120 +153,132 @@ function scene:create( event )
 	frog_sheet = graphics.newImageSheet("Spritesheet1.png", frog_opt);
 	sheet = frog_sheet;
 	sequenceData = frog_sequenceData;
+	
+	spawnPoints = { {{-100, 110}, {-100, 210}, {-100, 310}, {-100, 410}, {-100, 510}},
+					{{640, 110}, {640, 210}, {640, 310}, {640, 410}, {640, 510}}}
+	
+	local waterfall = display.newImage("waterfall.png", display.contentCenterX, display.contentCenterY)
+	sceneGroup:insert(waterfall)
+	-- Called when the scene is still off screen (but is about to come on screen).
+	anim = display.newSprite(frog_sheet, sequenceData);
+	anim.anchorX = .5;
+	anim.anchorY= 1;
+	anim.x = display.contentCenterX;
+	anim.y = 960;
+	anim:scale(0.6, 0.6)
+	anim:setSequence("idle")
+	sceneGroup:insert(anim)
+	waterfall:toBack()
+	waterfall:addEventListener("touch", screenTouched)
+	
+	function eatBug(self, event)
+		if event.other.tag == "bug" then
+			caughtBugs[event.other.pp.id] = nil
+			event.other.pp:delete()
+		end
+	end
+	
+	function grabBug(self, event)
+		if event.other.tag == "bug" and grabbing then
+			event.other.pp:caught()
+			event.other.pp.id = id
+			caughtBugs[id] = event.other.pp
+			id = id + 1
+		elseif event.other.tag == "bee" then
+			for _, bug in pairs(caughtBugs) do
+				caughtBugs[bug.id] = nil
+				bug:delete()
+			end
+			transition.cancel(tongue)
+			transition.cancel(tongueHitbox)
+			transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
+			transition.to(tongueHitbox, {x=tongue.x, y=tongue.y, time=300*scaleMax})
+			tongueExist = false
+			event.other.pp:caught()
+			event.other.pp:delete()
+		end
+	end
+	
+	mouthHitbox = display.newRect(display.contentCenterX, 854, 80, 80)
+	mouthHitbox.isVisible = false
+	physics.addBody(mouthHitbox, "dynamic", {isSensor=true})
+	mouthHitbox.collision = eatBug
+	mouthHitbox:addEventListener("collision")
+	
+	tongueHitbox = display.newRect(display.contentCenterX, 864, 40, 1000)
+	tongueHitbox.isVisible = false
+	tongueGroup:insert(tongueHitbox)
+	tongueHitbox.anchorX = .5
+	tongueHitbox.anchorY = 0
+	physics.addBody(tongueHitbox, "dynamic", {isSensor=true})
+	tongueHitbox.collision = grabBug
+	tongueHitbox:addEventListener("collision")
+	
+	-- label the screen (this will be removed)
+	local screenLabel = display.newText("Game Screen", display.contentCenterX, display.contentCenterY, "Arial", 40)
+	sceneGroup:insert(screenLabel)
+	
+		-- create options for die button (this will be removed)
+	local dieButtonOptions =
+	{
+		x = display.contentCenterX,
+		y = display.contentCenterY + 50,
+		label = "Die",
+		font = "Arial",
+		fontSize = 25,
+		textOnly = true,
+		labelColor = {default = {1,0,0}, over = {0,0,1}},
+		onEvent = onDeath,
+	}
+
+	-- add a button to simulate dying and game over (this will be removed)
+	local dieButton = widget.newButton(dieButtonOptions)
+	sceneGroup:insert(dieButton)
+	
+		-- options for the options button
+	local optionsButtonOptions =
+	{
+		x = display.contentWidth - 100,
+		y = 50,
+		label = "Options",
+		font = "Arial",
+		fontSize = 50,
+		labelColor = {default = {1,1,1}, over = {1,1,1}},
+		shape = "Rectangle",
+		width = 360,
+		height = 100,
+		fillColor = {default = {0,0,1}, over = {0,1,0}},
+		onEvent = onOptionsButton,
+	}
+
+	-- add an options button to load options overlay menu
+	local optionsButton = widget.newButton(optionsButtonOptions)
+	optionsButton:scale(.5,.5)
+	sceneGroup:insert(optionsButton)
    
 end
- 
+
 -- "scene:show()"
 function scene:show( event )
- 
 	local sceneGroup = self.view
 	local phase = event.phase
+	bugSpawnTimer = 1000
 	
-	function screenTouched(event)
-		if (event.phase == "began" and allowTongue) then
-			tongueExist = true
-			anim:setSequence("shoot")
-			allowTongue = false
-			--anim:play()
-			tongue = display.newSprite(frog_sheet, sequenceData);
-			tongue.anchorX = .5;
-			tongue.anchorY= 1;
-			tongue:scale(0.6, .06)
-			tongue.x = display.contentCenterX;
-			tongue.y = 864;
-			tongue:setSequence("tongue")
-			sceneGroup:insert(tongue)
-			event_yDifference = tongue.y-event.y
-			scaleMax = event_yDifference / 416
-			transition.scaleTo(tongue, {xScale=.4, yScale=scaleMax, transition=linear, time=500*scaleMax})
-		elseif (event.phase == "ended" and tongueExist) then
-			print("event")
-			transition.cancel(tongue)
-			anim:setSequence("idle")
-			transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=500*scaleMax, onComplete= stopTongue})
-			tongueExist = false
-		end
-	end
-	
-	function stopTongue()
-		allowTongue = true
-	end
- 
 	if ( phase == "will" ) then
-		local waterfall = display.newImage("waterfall.png", display.contentCenterX, display.contentCenterY)
-		-- Called when the scene is still off screen (but is about to come on screen).
-		anim = display.newSprite(frog_sheet, sequenceData);
-		anim.anchorX = .5;
-		anim.anchorY= 1;
-		anim.x = display.contentCenterX;
-		anim.y = 960;
-		anim:scale(0.6, 0.6)
-		anim:setSequence("idle")
-		sceneGroup:insert(anim)
-		waterfall:toBack()
+		print("game scene")
 		allowTongue = true
 		tongueExist = false
-		waterfall:addEventListener("touch", screenTouched)
-
-		-- label the screen (this will be removed)
-		local screenLabel = display.newText("Game Screen", display.contentCenterX, display.contentCenterY, "Arial", 40)
-		sceneGroup:insert(screenLabel)
-
-		-- function to be executed upon the player emptying the hunger bar and dying
-		local function onDeath(event)
-			-- go to the game over screen
-			composer.gotoScene("game_over")
-		end 
-
-		-- create options for die button (this will be removed)
-		local dieButtonOptions =
-		{
-			x = display.contentCenterX,
-			y = display.contentCenterY + 50,
-			label = "Die",
-			font = "Arial",
-			fontSize = 25,
-			textOnly = true,
-			labelColor = {default = {1,0,0}, over = {0,0,1}},
-			onEvent = onDeath,
-		}
-
-		-- add a button to simulate dying and game over (this will be removed)
-		local dieButton = widget.newButton(dieButtonOptions)
-		sceneGroup:insert(dieButton)
-
-		-- event handler function for options button
-		local function onOptionsButton(event)
-
-			-- load options_game overlay scene
-			composer.showOverlay("options_game", {effect="fade", time=500, isModal=true})
-
-		end
-
-		-- options for the options button
-		local optionsButtonOptions =
-		{
-			x = display.contentWidth - 100,
-			y = 50,
-			label = "Options",
-			font = "Arial",
-			fontSize = 50,
-			labelColor = {default = {1,1,1}, over = {1,1,1}},
-			shape = "Rectangle",
-			width = 360,
-			height = 100,
-			fillColor = {default = {0,0,1}, over = {0,1,0}},
-			onEvent = onOptionsButton,
-		}
-
-		-- add an options button to load options overlay menu
-		local optionsButton = widget.newButton(optionsButtonOptions)
-		optionsButton:scale(.5,.5)
-		sceneGroup:insert(optionsButton)
 	elseif ( phase == "did" ) then
-		  -- Called when the scene is now on screen.
-		  -- Insert code here to make the scene come alive.
-		  -- Example: start timers, begin animation, play audio, etc.
+		audio.setVolume( 0.2, { channel=3 } )
+		local options =
+		{
+			channel = 3,
+			loops = -1,
+			fadein = 2000,
+		}
+		audio.play(soundtable["beeSound"], options)
+		
+		timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
 	end
 end
  
@@ -159,6 +289,8 @@ function scene:hide( event )
 	local phase = event.phase
 	 
 	if ( phase == "will" ) then
+		timer.cancel(timer1)
+		audio.stop(3)
 		-- Called when the scene is on screen (but is about to go off screen).
 		-- Insert code here to "pause" the scene.
 		-- Example: stop timers, stop animation, stop audio, etc.
