@@ -8,7 +8,7 @@ local Bee = require("bee")
 local scene = composer.newScene()
 physics.start()
 physics.setGravity(0, 0)
---physics.setDrawMode("hybrid")
+physics.setDrawMode("hybrid")
 sceneGroup = nil
 timer1 = nil
 caughtBugs = {}
@@ -44,10 +44,17 @@ function spawnBug(event)
 	bugorbee = math.random(1, 2)
 	if bugorbee == 1 then
 		bug = Bee:new({xPos=x, yPos=y})
+		bug:spawn()
+		if side == 1 then
+			bug:flip()
+		end
 	else
 		bug = Bug:new({xPos=x, yPos=y})
+		bug:spawn()
+		if side == 2 then
+			bug:flip()
+		end
 	end
-	bug:spawn()
 	bug:goTo(pos[1], pos[2], speed)
 	sceneGroup:insert(bug.shape)
 	timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
@@ -164,6 +171,18 @@ function scene:create( event )
 		if event.other.tag == "bug" then
 			event.other.pp:caught()
 			table.insert(caughtBugs, event.other.pp)
+		elseif event.other.tag == "bee" then
+			for _, bug in ipairs(caughtBugs) do
+				bug:delete()
+			end
+			caughtBugs = {}
+			transition.cancel(tongue)
+			transition.cancel(tongueHitbox)
+			transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
+			transition.to(tongueHitbox, {x=tongue.x, y=tongue.y, time=300*scaleMax})
+			tongueExist = false
+			event.other.pp:caught()
+			event.other.pp:delete()
 		end
 	end
 	
