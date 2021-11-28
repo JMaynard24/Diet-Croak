@@ -51,33 +51,6 @@ function spawnBug(event)
 	timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
 end
 
--- "scene:create()"
-function scene:create( event )
-
-	sceneGroup = self.view
-	frog_opt = {
-					frames = {
-							{x=1, y=1, width = 320, height = 304},
-							{x=1, y= 307, width =320, height = 304},
-							{x=323, y= 1, width = 80, height = 416}
-					}
-				}
-
-	frog_sequenceData = {
-						{name = "idle", frames = {1}, time = 1000, loopCount = 1},
-						{name = "shoot", frames = {2}, time =1000, loopCount = 1},
-						{name = "tongue", frames = {3}, time =1000, loopCount = 1}
-						}
-
-	frog_sheet = graphics.newImageSheet("Spritesheet1.png", frog_opt);
-	sheet = frog_sheet;
-	sequenceData = frog_sequenceData;
-	
-	spawnPoints = { {{-100, 110}, {-100, 210}, {-100, 310}, {-100, 410}, {-100, 510}},
-					{{640, 110}, {640, 210}, {640, 310}, {640, 410}, {640, 510}}}
-   
-end
-
 function screenTouched(event)
 	if (event.phase == "began" and allowTongue and event.y < 600) then
 		tongueExist = true
@@ -131,73 +104,100 @@ function stopTongue()
 	anim:setSequence("idle")
 end
 
+
+-- "scene:create()"
+function scene:create( event )
+
+	sceneGroup = self.view
+	frog_opt = {
+					frames = {
+							{x=1, y=1, width = 320, height = 304},
+							{x=1, y= 307, width =320, height = 304},
+							{x=323, y= 1, width = 80, height = 416}
+					}
+				}
+
+	frog_sequenceData = {
+						{name = "idle", frames = {1}, time = 1000, loopCount = 1},
+						{name = "shoot", frames = {2}, time =1000, loopCount = 1},
+						{name = "tongue", frames = {3}, time =1000, loopCount = 1}
+						}
+
+	frog_sheet = graphics.newImageSheet("Spritesheet1.png", frog_opt);
+	sheet = frog_sheet;
+	sequenceData = frog_sequenceData;
+	
+	spawnPoints = { {{-100, 110}, {-100, 210}, {-100, 310}, {-100, 410}, {-100, 510}},
+					{{640, 110}, {640, 210}, {640, 310}, {640, 410}, {640, 510}}}
+	
+	local waterfall = display.newImage("waterfall.png", display.contentCenterX, display.contentCenterY)
+	sceneGroup:insert(waterfall)
+	-- Called when the scene is still off screen (but is about to come on screen).
+	anim = display.newSprite(frog_sheet, sequenceData);
+	anim.anchorX = .5;
+	anim.anchorY= 1;
+	anim.x = display.contentCenterX;
+	anim.y = 960;
+	anim:scale(0.6, 0.6)
+	anim:setSequence("idle")
+	sceneGroup:insert(anim)
+	waterfall:toBack()
+	waterfall:addEventListener("touch", screenTouched)
+	
+	-- label the screen (this will be removed)
+	local screenLabel = display.newText("Game Screen", display.contentCenterX, display.contentCenterY, "Arial", 40)
+	sceneGroup:insert(screenLabel)
+	
+		-- create options for die button (this will be removed)
+	local dieButtonOptions =
+	{
+		x = display.contentCenterX,
+		y = display.contentCenterY + 50,
+		label = "Die",
+		font = "Arial",
+		fontSize = 25,
+		textOnly = true,
+		labelColor = {default = {1,0,0}, over = {0,0,1}},
+		onEvent = onDeath,
+	}
+
+	-- add a button to simulate dying and game over (this will be removed)
+	local dieButton = widget.newButton(dieButtonOptions)
+	sceneGroup:insert(dieButton)
+	
+		-- options for the options button
+	local optionsButtonOptions =
+	{
+		x = display.contentWidth - 100,
+		y = 50,
+		label = "Options",
+		font = "Arial",
+		fontSize = 50,
+		labelColor = {default = {1,1,1}, over = {1,1,1}},
+		shape = "Rectangle",
+		width = 360,
+		height = 100,
+		fillColor = {default = {0,0,1}, over = {0,1,0}},
+		onEvent = onOptionsButton,
+	}
+
+	-- add an options button to load options overlay menu
+	local optionsButton = widget.newButton(optionsButtonOptions)
+	optionsButton:scale(.5,.5)
+	sceneGroup:insert(optionsButton)
+   
+end
+
 -- "scene:show()"
 function scene:show( event )
- 
 	local sceneGroup = self.view
 	local phase = event.phase
 	bugSpawnTimer = 1000
 	
- 
 	if ( phase == "will" ) then
 		print("game scene")
-		local waterfall = display.newImage("waterfall.png", display.contentCenterX, display.contentCenterY)
-		sceneGroup:insert(waterfall)
-		-- Called when the scene is still off screen (but is about to come on screen).
-		anim = display.newSprite(frog_sheet, sequenceData);
-		anim.anchorX = .5;
-		anim.anchorY= 1;
-		anim.x = display.contentCenterX;
-		anim.y = 960;
-		anim:scale(0.6, 0.6)
-		anim:setSequence("idle")
-		sceneGroup:insert(anim)
-		waterfall:toBack()
 		allowTongue = true
 		tongueExist = false
-		waterfall:addEventListener("touch", screenTouched)
-
-		-- label the screen (this will be removed)
-		local screenLabel = display.newText("Game Screen", display.contentCenterX, display.contentCenterY, "Arial", 40)
-		sceneGroup:insert(screenLabel)
-
-		-- create options for die button (this will be removed)
-		local dieButtonOptions =
-		{
-			x = display.contentCenterX,
-			y = display.contentCenterY + 50,
-			label = "Die",
-			font = "Arial",
-			fontSize = 25,
-			textOnly = true,
-			labelColor = {default = {1,0,0}, over = {0,0,1}},
-			onEvent = onDeath,
-		}
-
-		-- add a button to simulate dying and game over (this will be removed)
-		local dieButton = widget.newButton(dieButtonOptions)
-		sceneGroup:insert(dieButton)
-
-		-- options for the options button
-		local optionsButtonOptions =
-		{
-			x = display.contentWidth - 100,
-			y = 50,
-			label = "Options",
-			font = "Arial",
-			fontSize = 50,
-			labelColor = {default = {1,1,1}, over = {1,1,1}},
-			shape = "Rectangle",
-			width = 360,
-			height = 100,
-			fillColor = {default = {0,0,1}, over = {0,1,0}},
-			onEvent = onOptionsButton,
-		}
-
-		-- add an options button to load options overlay menu
-		local optionsButton = widget.newButton(optionsButtonOptions)
-		optionsButton:scale(.5,.5)
-		sceneGroup:insert(optionsButton)
 	elseif ( phase == "did" ) then
 		timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
 		  -- Called when the scene is now on screen.
