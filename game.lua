@@ -8,6 +8,7 @@ local Bee = require("bee")
 local scene = composer.newScene()
 physics.start()
 physics.setGravity(0, 0)
+physics.setDrawMode("hybrid")
 sceneGroup = nil
 timer1 = nil
  
@@ -71,11 +72,15 @@ function screenTouched(event)
 		rotationTongue = math.sin(event_xDifference/event_yDifference)
 		tongue:rotate(rotationTongue*57.298)
 		tongue:setSequence("tongue")
+		tongueHitbox:rotate(rotationTongue*57.298)
 		transition.scaleTo(tongue, {xScale=.4, yScale=scaleMax, transition=linear, time=400*scaleMax})
+		transition.to(tongueHitbox, {x=event.x, y=event.y, time=400*scaleMax})
 	elseif (event.phase == "ended" and tongueExist) then
 		print("event")
 		transition.cancel(tongue)
+		transition.cancel(tongueHitbox)
 		transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
+		transition.to(tongueHitbox, {x=tongue.x, y=tongue.y, time=300*scaleMax})
 		tongueExist = false
 	end
 end
@@ -102,6 +107,7 @@ function stopTongue()
 	allowTongue = true
 	tongue:removeSelf( )
 	anim:setSequence("idle")
+	tongueHitbox:rotate(-(rotationTongue*57.298))
 end
 
 
@@ -143,6 +149,12 @@ function scene:create( event )
 	sceneGroup:insert(anim)
 	waterfall:toBack()
 	waterfall:addEventListener("touch", screenTouched)
+	
+	tongueHitbox = display.newRect(display.contentCenterX, 864, 40, 1000)
+	tongueHitbox.isVisible = false
+	tongueHitbox.anchorX = .5
+	tongueHitbox.anchorY = 0
+	physics.addBody(tongueHitbox, "dynamic", {isSensor=true})
 	
 	-- label the screen (this will be removed)
 	local screenLabel = display.newText("Game Screen", display.contentCenterX, display.contentCenterY, "Arial", 40)
@@ -200,9 +212,6 @@ function scene:show( event )
 		tongueExist = false
 	elseif ( phase == "did" ) then
 		timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
-		  -- Called when the scene is now on screen.
-		  -- Insert code here to make the scene come alive.
-		  -- Example: start timers, begin animation, play audio, etc.
 	end
 end
  
