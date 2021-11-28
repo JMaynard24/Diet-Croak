@@ -24,46 +24,44 @@ end
 
 
 function scene:create( event )
-	-- options for play button
+
 	local sceneGroup = self.view
-    local playButtonOptions = 
+	local playButtonTextOptions = 
     {
+        text ="Play",
         x = display.contentCenterX,
-        y = display.contentCenterY,
-        label = "Play",
-        labelColor = {default = {1,1,1}, over = {1,1,1}},
+        y = display.contentCenterY+50,
         font = "Arial",
-        fontSize = 60,
-        shape = "Rectangle",
-        width = 360,
-        height = 100,
-        fillColor = {default = {0,1,0}, over = {0,0,1}},
-        onEvent = onPlayButton,
+        fontSize = 72
+
     }
 
     -- create a play button to begin the game and move to the game screen
-    local playButton = widget.newButton(playButtonOptions)
+    local playButton = display.newImage("defaultbutton.png", display.contentCenterX, display.contentCenterY+50)
+    playButton:scale(1, .7)
+    playButton:addEventListener( "touch", onPlayButton )
+    local playButtonText = display.newText(playButtonTextOptions)
     sceneGroup:insert(playButton)
+    sceneGroup:insert(playButtonText)
 
-    -- options for options button
-    local optionsButtonOptions =
+local optionsButtonTextOptions = 
     {
+        text ="Options",
         x = display.contentCenterX,
-        y = display.contentCenterY + 150,
-        label = "Options",
-        labelColor = {default = {1,1,1}, over = {1,1,1}},
+        y = display.contentCenterY+250,
         font = "Arial",
-        fontSize = 60,
-        shape = "Rectangle",
-        width = 360,
-        height = 100,
-        fillColor = {default = {0,0,1}, over = {0,1,0}},
-        onEvent = onOptionsButton,
+        fontSize = 72
+
     }
 
     -- create an options button to bring up the options menu
-    local optionsButton = widget.newButton(optionsButtonOptions)
+    local optionsButton = display.newImage("defaultbutton.png", display.contentCenterX, display.contentCenterY+250)
+    optionsButton:scale(1, .7)
+    optionsButton:addEventListener( "touch", onOptionsButton )
+    local optionsButtonText = display.newText(optionsButtonTextOptions)
     sceneGroup:insert(optionsButton)
+    sceneGroup:insert(optionsButtonText)
+
 end
  
 -- "scene:show()"
@@ -74,7 +72,6 @@ function scene:show( event )
  
 	if ( phase == "will" ) then
 		print("menu scene")
-      
 
 		local sceneGroup = self.view
 
