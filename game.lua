@@ -78,7 +78,7 @@ function spawnBug(event)
 	if bugorbee == 1 then
 		bug = Bee:new({xPos=x, yPos=y})
 		bug:spawn()
-		if side == 1 then
+		if side == 2 then
 			bug:flip()
 		end
 	else
