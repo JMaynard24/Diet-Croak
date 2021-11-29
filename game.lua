@@ -34,7 +34,7 @@ local difficulty = composer.getVariable("difficultyVar")
 
 
 if (composer.getVariable("difficultyVar") == nil) then
-	difficulty = .3
+	difficulty = .1
 end
 	
 
@@ -58,7 +58,7 @@ function spawnBug(event)
 	side = math.random(1,2)
 	row = math.random(1,5)
 	target = math.random(1,5)
-	speed = (math.random(10, 25) / 10) * 1000
+	speed = ((math.random(10, 25) / 10) * 1000) * (1/((difficulty + .1)*2))
 	x = 0
 	y = 0
 	pos = {0, 0}
@@ -73,7 +73,7 @@ function spawnBug(event)
 		pos[1] = spawnPoints[1][target][1]
 		pos[2] = spawnPoints[1][target][2]
 	end
-	bugorbee = math.random(1, 2)
+	bugorbee = math.random(1, 4)
 	if bugorbee == 1 then
 		bug = Bee:new({xPos=x, yPos=y})
 		bug:spawn()
