@@ -11,6 +11,7 @@ physics.setGravity(0, 0)
 --physics.setDrawMode("hybrid")
 sceneGroup = nil
 timer1 = nil
+barTimer = nil
 tongueGroup = display.newGroup()
 caughtBugs = {}
 id = 0
@@ -22,6 +23,29 @@ soundtable =
 	beeSound = audio.loadSound("bee.wav")
 }
  
+local gameOver = false
+local initialLength = 150
+local barLength = initialLength
+local flyNum = 0
+local flyHungerVal = 40
+local difficulty = composer.getVariable("difficultyVar")
+--print(difficulty)
+--tempDifficulty = difficulty
+--local toungeOut = false
+
+
+if (composer.getVariable("difficultyVar") == nil) then
+	difficulty = .3
+end
+	
+
+local height = 20
+local rectX=75
+local rectY=920
+local width = barLength
+
+
+
 ---------------------------------------------------------------------------------
 -- All code outside of the listener functions will only be executed ONCE
 -- unless "composer.removeScene()" is called.
@@ -103,15 +127,30 @@ function screenTouched(event)
 			transition.to(bug.shape, {x=tongue.x, y=tongue.y, time=300*scaleMax})
 		end
 		tongueExist = false
+		
 	end
 end
 
 -- function to be executed upon the player emptying the hunger bar and dying
 local function onDeath(event)
 	-- go to the game over screen
+
+	gameOver = true
 	if event.phase == "began" then
 		composer.gotoScene("game_over", {params = {userScore = score}})
 	end
+end
+
+local function eatFly()
+	print("flyNum: ".. flyNum)
+	if(barLength >=initialLength-flyHungerVal*flyNum) then
+		barLength = initialLength
+	else
+		barLength = barLength + flyNum*flyHungerVal
+	end
+	print(flyNum)
+	flyNum=0
+
 end
 
 function stopTongue()
@@ -171,12 +210,18 @@ function scene:create( event )
 	scoreText:setEmbossColor(color)
 	sceneGroup:insert(scoreText)
 	
+	gameOver = false
+
+
 	function eatBug(self, event)
 		if event.other.tag == "bug" then
+			
 			caughtBugs[event.other.pp.id] = nil
 			event.other.pp:delete()
 			score = score+1
 			scoreText.text = "Score: " .. score
+			
+			eatFly()
 		end
 	end
 	
@@ -185,10 +230,12 @@ function scene:create( event )
 			event.other.pp:caught()
 			event.other.pp.id = id
 			caughtBugs[id] = event.other.pp
+			flyNum = flyNum +1
 			id = id + 1
 		elseif event.other.tag == "bee" then
 			for _, bug in pairs(caughtBugs) do
 				caughtBugs[bug.id] = nil
+				flyNum=0
 				bug:delete()
 			end
 			transition.cancel(tongue)
@@ -237,7 +284,19 @@ function scene:create( event )
 	local dieButton = widget.newButton(dieButtonOptions)
 	sceneGroup:insert(dieButton)
    
+
+	redRect = display.newRect(rectX, rectY, width, height )
+	yellowRect= display.newRect(rectX, rectY, width-5, height-5 )
+
+	yellowRect:setFillColor( 1, 1, 0)
+	redRect:setFillColor( 1, 0, 0 )
+
+	sceneGroup:insert(redRect)
+	sceneGroup:insert(yellowRect)
+
+	--local barTimer =timer.performWithDelay(10, update, 0) 
 end
+
 
 -- "scene:show()"
 function scene:show( event )
@@ -262,9 +321,54 @@ function scene:show( event )
 		audio.play(soundtable["beeSound"], options)
 		
 		timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
+		
 	end
 end
+
+function scene:destroy( event )
  
+	local sceneGroup = self.view
+ 
+	-- Called prior to the removal of scene's view ("sceneGroup").
+	-- Insert code here to clean up the scene.
+	-- Example: remove display objects, save state, etc.
+end
+
+local function update( ... )
+	--local sceneGroup = self.view
+	
+	if(gameOver == false) then
+		--print(barLength)
+		if(barLength <= 0) then
+			gameOver = true
+			yellowRect.isVisible = false			
+			composer.gotoScene("game_over", {params = {userScore = score}})
+
+		else
+			if(tongueExist) then
+				tempDifficulty = difficulty + .05
+			else
+				tempDifficulty = difficulty
+				
+			end
+			barLength = barLength - tempDifficulty
+			width = barLength
+			yellowRect:removeSelf()
+			yellowRect = nil
+
+			
+			yellowRect= display.newRect(barLength/2 +rectX - initialLength/2, rectY, width-5, height-5 )
+			yellowRect:setFillColor( 1, 1, 0)
+			sceneGroup:insert(yellowRect)
+
+			--print(tongueExist)
+		end
+	end
+end
+
+barTimer =timer.performWithDelay(10, update, 0) 
+
+
 -- "scene:hide()"
 function scene:hide( event )
  
@@ -273,6 +377,7 @@ function scene:hide( event )
 	 
 	if ( phase == "will" ) then
 		timer.cancel(timer1)
+		timer.cancel(barTimer)
 		audio.stop(3)
 		-- Called when the scene is on screen (but is about to go off screen).
 		-- Insert code here to "pause" the scene.
@@ -284,14 +389,7 @@ function scene:hide( event )
 end
  
 -- "scene:destroy()"
-function scene:destroy( event )
- 
-	local sceneGroup = self.view
- 
-	-- Called prior to the removal of scene's view ("sceneGroup").
-	-- Insert code here to clean up the scene.
-	-- Example: remove display objects, save state, etc.
-end
+
  
 ---------------------------------------------------------------------------------
  

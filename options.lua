@@ -74,7 +74,12 @@ function scene:create( event )
 	local closeButton = widget.newButton(closeButtonOptions)
 	closeButton:scale(.5,.5)
 	sceneGroup:insert(closeButton)
-
+	local sliderVal = 50;
+	local function difficultySliderListener( event )
+		sliderVal = event.value
+		print( "transition time is" .. sliderVal/100 * .4+.1 .. "in ms" )
+		composer.setVariable("difficultyVar", sliderVal/100 * .4+.1) 
+	end
 	-- options for difficulty slider
 	local difficultySliderOptions =
 	{
@@ -82,6 +87,7 @@ function scene:create( event )
 		y = display.contentCenterY - 25,
 		width = 300,
 		value = 50,
+		listener = difficultySliderListener
 	}
 
 	-- create and label slider for game difficulty
