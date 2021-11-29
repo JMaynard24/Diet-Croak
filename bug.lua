@@ -26,12 +26,10 @@ function Bug:spawn()
 	self.shape.x = self.xPos
 	self.shape.y = self.yPos
 	self.shape.tag = "bug"
-	self.shape.width = 66
-	self.shape.height = 56
-	self.shape:scale(0.25, 0.25)
-	--self.shape:setFillColor(1, 0, 0)
+	self.shape.width=64
+	self.shape.height=56
 	physics.addBody(self.shape, "dynamic", {bounce = 0, filter=bugCollisionFilter})
-	self.shape.isFixedRotation = true
+	self.shape:scale(0.25, 0.25)
 	self.shape.pp = self
 end
 
@@ -56,7 +54,8 @@ function Bug:delete()
 end
 
 function Bug:flip()
-	self.shape.xScale = -1
+	self.shape.xScale = -.25
+	self.shape.yScale = .25
 end
 
 function del(obj)

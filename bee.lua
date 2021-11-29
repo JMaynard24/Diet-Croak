@@ -13,17 +13,16 @@ beesequenceData = bee_sequenceData;
 function Bee:spawn()
 	bugCollisionFilter = { categoryBits=2, maskBits=1 }
 	self.shape = display.newSprite(beesheet, beesequenceData)
-	self.shape.width=66
-	self.shape.height=56
-	self.shape:scale(0.25, 0.25)
 	self.shape:setSequence( "idle" )
 	self.shape:play()
 	self.shape.x = self.xPos
 	self.shape.y = self.yPos
 	self.shape.tag = "bee"
-	
+	self.shape.width=66
+	self.shape.height=38
 	physics.addBody(self.shape, "dynamic", {bounce = 0, filter=bugCollisionFilter})
-		self.shape.pp = self
+	self.shape:scale(0.25, 0.25)
+	self.shape.pp = self
 end
 
 return Bee
