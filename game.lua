@@ -234,6 +234,7 @@ function scene:create( event )
 			flyNum = flyNum +1
 			id = id + 1
 		elseif event.other.tag == "bee" then
+			grabbing = false
 			for _, bug in pairs(caughtBugs) do
 				caughtBugs[bug.id] = nil
 				flyNum=0
