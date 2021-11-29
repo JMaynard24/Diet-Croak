@@ -124,7 +124,7 @@ function scene:show( event )
 		if event.phase == "ended" then
 			audio.setVolume((volumeSlider.value/100)*0.4, {channel=1} )
 			audio.setVolume((volumeSlider.value/100)*0.75, {channel=2} )
-			audio.setVolume((volumeSlider.value/100)*0.2, {channel=3} )
+			composer.setVariable("volumeValue", volumeSlider.value)
 		end
 	end
 
@@ -143,6 +143,7 @@ function scene:show( event )
 	volumeSliderLabel = display.newText("Volume", display.contentCenterX, display.contentCenterY - 125, "Arial", 25)
 	volumeSliderLabel:setFillColor(0,0,0)
 	volumeSlider:addEventListener( "touch", sliderTouchListener )
+	composer.setVariable("volumeValue", volumeSlider.value)
 	sceneGroup:insert(volumeSliderLabel)
 
 

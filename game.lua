@@ -350,7 +350,11 @@ function scene:show( event )
 		allowTongue = true
 		tongueExist = false
 	elseif ( phase == "did" ) then
-		audio.setVolume( 0.2, { channel=3 } )
+		if composer.getVariable("volumeValue") ~= nil then
+			audio.setVolume( (composer.getVariable("volumeValue")/100)*0.2, { channel=3 } )
+		else
+			audio.setVolume( 0.2, { channel=3 } )
+		end
 		local options =
 		{
 			channel = 3,
