@@ -77,6 +77,9 @@ function scene:create( event )
 	local sliderVal = 50;
 	local function difficultySliderListener( event )
 		sliderVal = event.value
+		if sliderVal == 0 then
+			sliderVal = 1
+		end
 		print( "transition time is" .. sliderVal/100 * .4+.1 .. "in ms" )
 		composer.setVariable("difficultyVar", sliderVal/100 * .4+.1) 
 	end

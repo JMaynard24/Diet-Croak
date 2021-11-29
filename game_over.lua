@@ -16,12 +16,18 @@ local scene = composer.newScene()
 -- open leaderboard csv file
 leaderboardFile = system.pathForFile("leaderboard.csv")
 
+-- create boolean to allow use of buttons
+buttonPressAllowed = false
+
 -- event handler for retry button
 function onRetryButton(event)
 
    -- go to game screen
    if event.phase == "began" then
-      composer.gotoScene("game")
+      if buttonPressAllowed == true then
+         composer.removeScene("game")
+         composer.gotoScene("game")
+      end
    end
 
 end
@@ -31,7 +37,9 @@ function onMenuButton(event)
 
    -- go to menu screen
    if event.phase == "began" then
-      composer.gotoScene("menu")
+      if buttonPressAllowed == true then
+         composer.gotoScene("menu")
+      end
    end
 
 end
@@ -189,7 +197,19 @@ function scene:show( event )
    if ( phase == "will" ) then
       -- Called when the scene is still off screen (but is about to come on screen).
 
+      -- delay the use of buttons breifly (this is to avoid a crash if the user restarts too quickly)
+      buttonPressAllowed = false
+
+      -- update the leaderboard
       updateScores(params.userScore)
+
+      -- function to be called in performWithDelay
+      local function allowButtonPress ()
+         buttonPressAllowed = true
+      end
+
+      -- reallow the use of buttons after a delay
+      timer.performWithDelay( 2300, allowButtonPress , 1)
 
 
    elseif ( phase == "did" ) then

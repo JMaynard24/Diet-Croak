@@ -93,6 +93,7 @@ function spawnBug(event)
 	timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
 end
 
+
 function screenTouched(event)
 	if (event.phase == "began" and allowTongue and event.y < 600) then
 		tongueExist = true
@@ -294,7 +295,45 @@ function scene:create( event )
 	sceneGroup:insert(redRect)
 	sceneGroup:insert(yellowRect)
 
-	--local barTimer =timer.performWithDelay(10, update, 0) 
+end
+
+local function update( ... )
+	
+	if(gameOver == false) then
+		--print(barLength)
+		if(barLength <= 0) then
+			gameOver = true
+			yellowRect.isVisible = false
+			if tongue ~= nil then	
+				transition.cancel(tongue)
+				transition.cancel(tongueHitbox)
+				--transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
+				transition.to(tongueHitbox, {x=tongue.x, y=tongue.y, time=300*scaleMax})
+				tongue.isVisible = false
+				tongueExist = false	
+			end	
+			composer.gotoScene("game_over", {params = {userScore = score}})
+
+		else
+			if(tongueExist) then
+				tempDifficulty = difficulty + .05
+			else
+				tempDifficulty = difficulty
+				
+			end
+			barLength = barLength - tempDifficulty
+			width = barLength
+			yellowRect:removeSelf()
+			yellowRect = nil
+
+			
+			yellowRect= display.newRect(barLength/2 +rectX - initialLength/2, rectY, width-5, height-5 )
+			yellowRect:setFillColor( 1, 1, 0)
+			sceneGroup:insert(yellowRect)
+
+			--print(tongueExist)
+		end
+	end
 end
 
 
@@ -321,6 +360,7 @@ function scene:show( event )
 		audio.play(soundtable["beeSound"], options)
 		
 		timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
+		barTimer =timer.performWithDelay(10, update, 0)
 		
 	end
 end
@@ -332,41 +372,7 @@ function scene:destroy( event )
 	-- Called prior to the removal of scene's view ("sceneGroup").
 	-- Insert code here to clean up the scene.
 	-- Example: remove display objects, save state, etc.
-end
-
-local function update( ... )
-	--local sceneGroup = self.view
-	
-	if(gameOver == false) then
-		--print(barLength)
-		if(barLength <= 0) then
-			gameOver = true
-			yellowRect.isVisible = false			
-			composer.gotoScene("game_over", {params = {userScore = score}})
-
-		else
-			if(tongueExist) then
-				tempDifficulty = difficulty + .05
-			else
-				tempDifficulty = difficulty
-				
-			end
-			barLength = barLength - tempDifficulty
-			width = barLength
-			yellowRect:removeSelf()
-			yellowRect = nil
-
-			
-			yellowRect= display.newRect(barLength/2 +rectX - initialLength/2, rectY, width-5, height-5 )
-			yellowRect:setFillColor( 1, 1, 0)
-			sceneGroup:insert(yellowRect)
-
-			--print(tongueExist)
-		end
-	end
-end
-
-barTimer =timer.performWithDelay(10, update, 0) 
+end 
 
 
 -- "scene:hide()"
