@@ -3,7 +3,7 @@
 
 
 local composer = require("composer")
-
+composer.setVariable("difficultyVar", .2) 
 display.setStatusBar(display.HiddenStatusBar)
 
 soundtable = 

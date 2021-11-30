@@ -119,7 +119,7 @@ function screenTouched(event)
 		transition.to(tongueHitbox, {x=event.x, y=event.y, time=400*scaleMax})
 	elseif (event.phase == "ended" and tongueExist) then
 		grabbing = false
-		print("event")
+		--print("event")
 		transition.cancel(tongue)
 		transition.cancel(tongueHitbox)
 		transition.scaleTo(tongue, {xScale=.6, yScale=.01, transition=linear, time=300*scaleMax, onComplete= stopTongue})
@@ -335,7 +335,7 @@ function scene:show( event )
 	if ( phase == "will" ) then
 		score = 0
 		scoreText.text = "Score: " .. score
-		print("game scene")
+		--print("game scene")
 		allowTongue = true
 		tongueExist = false
 	elseif ( phase == "did" ) then

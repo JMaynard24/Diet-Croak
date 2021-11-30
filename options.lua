@@ -80,7 +80,7 @@ function scene:create( event )
 		if sliderVal == 0 then
 			sliderVal = 1
 		end
-		print( "transition time is" .. sliderVal/100 * .4+.1 .. "in ms" )
+		--print( "transition time is" .. sliderVal/100 * .4+.1 .. "in ms" )
 		composer.setVariable("difficultyVar", sliderVal/100 * .2+.1) 
 	end
 	-- options for difficulty slider
