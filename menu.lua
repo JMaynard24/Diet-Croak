@@ -79,7 +79,7 @@ function scene:show( event )
 	local phase = event.phase
  
 	if ( phase == "will" ) then
-		print("menu scene")
+		--print("menu scene")
 
 		local sceneGroup = self.view
 

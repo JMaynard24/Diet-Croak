@@ -72,7 +72,7 @@ function scene:create( event )
       file = nil
 
    -- display game over message
-      print("game over scene")
+      --print("game over scene")
       screenLabel = display.newText("Game Over", display.contentCenterX, display.contentCenterY - 350, "Arial", 60)
       sceneGroup:insert(screenLabel)
 
@@ -188,7 +188,7 @@ function updateScores(newScore)
    io.close(file)
    file = nil
 
-   print("leaderboard.csv file written")
+   --print("leaderboard.csv file written")
 end
  
 -- "scene:show()"

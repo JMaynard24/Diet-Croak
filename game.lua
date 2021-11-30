@@ -90,11 +90,6 @@ function spawnBug(event)
 	goTo(bug, pos[1], pos[2], speed)
 	sceneGroup:insert(bug.shape)
 	timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
-	text = ""
-	for _, bug in pairs(allBugs) do
-		text = text .. " " .. bug.allID
-	end
-	print(text)
 end
 
 function goTo(bug, destX, destY, t)
