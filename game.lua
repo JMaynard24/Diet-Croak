@@ -258,25 +258,25 @@ function scene:create( event )
 	tongueHitbox:addEventListener("collision")
 	
 	-- label the screen (this will be removed)
-	local screenLabel = display.newText("Game Screen", display.contentCenterX, display.contentCenterY, "Arial", 40)
-	sceneGroup:insert(screenLabel)
+	--local screenLabel = display.newText("Game Screen", display.contentCenterX, display.contentCenterY, "Arial", 40)
+	--sceneGroup:insert(screenLabel)
 	
 		-- create options for die button (this will be removed)
-	local dieButtonOptions =
-	{
-		x = display.contentCenterX,
-		y = display.contentCenterY + 50,
-		label = "Die",
-		font = "Arial",
-		fontSize = 25,
-		textOnly = true,
-		labelColor = {default = {1,0,0}, over = {0,0,1}},
-		onEvent = onDeath,
-	}
+	--local dieButtonOptions =
+	--{
+	--	x = display.contentCenterX+50,
+	--	y = display.contentCenterY -300,
+	--	label = "Die",
+	--	font = "Arial",
+	--	fontSize = 40,
+	--	textOnly = true,
+	--	labelColor = {default = {1,1,1}, over = {0,0,1}},
+	--	onEvent = onDeath,
+	--}
 
 	-- add a button to simulate dying and game over (this will be removed)
-	local dieButton = widget.newButton(dieButtonOptions)
-	sceneGroup:insert(dieButton)
+	--local dieButton = widget.newButton(dieButtonOptions)
+	--sceneGroup:insert(dieButton)
    
 
 	redRect = display.newRect(rectX, rectY, width, height )
