@@ -49,7 +49,9 @@ function Bug:caught()
 end
 
 function Bug:delete()
-	self.shape:removeSelf()
+	if self.shape ~= nil then
+		self.shape:removeSelf()
+	end
 	self = nil
 end
 

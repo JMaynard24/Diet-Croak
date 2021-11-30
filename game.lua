@@ -206,9 +206,7 @@ function scene:create( event )
 		if event.other.tag == "bug" then
 			
 			caughtBugs[event.other.pp.id] = nil
-			if event.other.pp ~= nil then
-				event.other.pp:delete()
-			end
+			event.other.pp:delete()
 			score = score+1
 			scoreText.text = "Score: " .. score
 			
@@ -232,9 +230,7 @@ function scene:create( event )
 			for _, bug in pairs(caughtBugs) do
 				caughtBugs[bug.id] = nil
 				flyNum=0
-				if bug ~= nil then
-					bug:delete()
-				end
+				bug:delete()
 			end
 			transition.cancel(tongue)
 			transition.cancel(tongueHitbox)
@@ -242,9 +238,7 @@ function scene:create( event )
 			transition.to(tongueHitbox, {x=tongue.x, y=tongue.y, time=300*scaleMax})
 			tongueExist = false
 			event.other.pp:caught()
-			if event.other.pp ~= nil then
-				event.other.pp:delete()
-			end
+			event.other.pp:delete()
 		end
 	end
 	
