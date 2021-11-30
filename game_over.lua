@@ -48,7 +48,11 @@ end
 function scene:create( event )
  
    local sceneGroup = self.view
- 
+   local background = display.newImage("titlebackground.png", display.contentCenterX, display.contentCenterY)
+   background.xScale = display.contentWidth / background.width; 
+   background.yScale = display.contentHeight / background.height;
+   sceneGroup:insert(background)
+
    -- Initialize the scene here.
    -- Example: add display objects to "sceneGroup", add touch listeners, etc.
 

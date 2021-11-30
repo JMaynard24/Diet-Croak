@@ -39,7 +39,9 @@ function scene:create( event )
     -- set initial game difficulty
     composer.setVariable("difficultyVar", 50/100 * .4+.1)
 
-    local background = display.newImage("lake.jpg", display.contentCenterX, display.contentCenterY)
+    local background = display.newImage("titlebackground.png", display.contentCenterX, display.contentCenterY)
+    background.xScale = display.contentWidth / background.width; 
+	background.yScale = display.contentHeight / background.height;
     sceneGroup:insert(background)
 
     -- create a play button to begin the game and move to the game screen
