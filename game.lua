@@ -34,7 +34,7 @@ local difficulty = composer.getVariable("difficultyVar")
 
 
 if (composer.getVariable("difficultyVar") == nil) then
-	difficulty = .1
+	difficulty = .2
 end
 	
 
@@ -141,18 +141,6 @@ local function onDeath(event)
 	end
 end
 
-local function eatFly()
-	print("flyNum: ".. flyNum)
-	if(barLength >=initialLength-flyHungerVal*flyNum) then
-		barLength = initialLength
-	else
-		barLength = barLength + flyNum*flyHungerVal
-	end
-	print(flyNum)
-	flyNum=0
-
-end
-
 function stopTongue()
 	grabbing = true
 	allowTongue = true
@@ -218,11 +206,17 @@ function scene:create( event )
 		if event.other.tag == "bug" then
 			
 			caughtBugs[event.other.pp.id] = nil
-			event.other.pp:delete()
+			if event.other.pp ~= nil then
+				event.other.pp:delete()
+			end
 			score = score+1
 			scoreText.text = "Score: " .. score
 			
-			eatFly()
+			if(barLength >=initialLength-flyHungerVal) then
+				barLength = initialLength
+			else
+				barLength = barLength + flyHungerVal
+			end
 		end
 	end
 	
@@ -231,14 +225,16 @@ function scene:create( event )
 			event.other.pp:caught()
 			event.other.pp.id = id
 			caughtBugs[id] = event.other.pp
-			flyNum = flyNum +1
+			flyNum = flyNum + 1
 			id = id + 1
 		elseif event.other.tag == "bee" then
 			grabbing = false
 			for _, bug in pairs(caughtBugs) do
 				caughtBugs[bug.id] = nil
 				flyNum=0
-				bug:delete()
+				if bug ~= nil then
+					bug:delete()
+				end
 			end
 			transition.cancel(tongue)
 			transition.cancel(tongueHitbox)
@@ -246,7 +242,9 @@ function scene:create( event )
 			transition.to(tongueHitbox, {x=tongue.x, y=tongue.y, time=300*scaleMax})
 			tongueExist = false
 			event.other.pp:caught()
-			event.other.pp:delete()
+			if event.other.pp ~= nil then
+				event.other.pp:delete()
+			end
 		end
 	end
 	
