@@ -33,22 +33,12 @@ function Bug:spawn()
 	self.shape.pp = self
 end
 
-function Bug:goTo(destX, destY, t)
-	opt =   {
-			time = t,
-			x = destX,
-			y = destY,
-			onComplete = del
-			}
-			
-	transition.to(self.shape, opt)
-end
-
 function Bug:caught()
 	transition.cancel(self.shape)
 end
 
 function Bug:delete()
+	transition.cancel(self.shape)
 	if self.shape ~= nil then
 		self.shape:removeSelf()
 	end

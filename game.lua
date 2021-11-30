@@ -13,7 +13,9 @@ sceneGroup = nil
 timer1 = nil
 barTimer = nil
 tongueGroup = display.newGroup()
+allBugs = {}
 caughtBugs = {}
+allID = 0
 id = 0
 grabbing = true
 score = 0
@@ -31,11 +33,6 @@ local difficulty = composer.getVariable("difficultyVar")
 --print(difficulty)
 --tempDifficulty = difficulty
 --local toungeOut = false
-
-
-if (composer.getVariable("difficultyVar") == nil) then
-	difficulty = .2
-end
 	
 
 local height = 20
@@ -87,9 +84,33 @@ function spawnBug(event)
 			bug:flip()
 		end
 	end
-	bug:goTo(pos[1], pos[2], speed)
+	bug.allID = allID
+	allBugs[allID] = bug
+	allID = allID + 1
+	goTo(bug, pos[1], pos[2], speed)
 	sceneGroup:insert(bug.shape)
 	timer1 = timer.performWithDelay(bugSpawnTimer, spawnBug)
+	text = ""
+	for _, bug in pairs(allBugs) do
+		text = text .. " " .. bug.allID
+	end
+	print(text)
+end
+
+function goTo(bug, destX, destY, t)
+	opt =   {
+			time = t,
+			x = destX,
+			y = destY,
+			onComplete = delBug
+			}
+			
+	transition.to(bug.shape, opt)
+end
+
+function delBug(bug)
+	bug.pp:delete()
+	allBugs[bug.pp.allID] = nil
 end
 
 
@@ -206,6 +227,7 @@ function scene:create( event )
 		if event.other.tag == "bug" then
 			
 			caughtBugs[event.other.pp.id] = nil
+			allBugs[event.other.pp.allID] = nil
 			event.other.pp:delete()
 			score = score+1
 			scoreText.text = "Score: " .. score
@@ -230,6 +252,7 @@ function scene:create( event )
 			for _, bug in pairs(caughtBugs) do
 				caughtBugs[bug.id] = nil
 				flyNum=0
+				allBugs[bug.allID] = nil
 				bug:delete()
 			end
 			transition.cancel(tongue)
@@ -238,11 +261,13 @@ function scene:create( event )
 			transition.to(tongueHitbox, {x=tongue.x, y=tongue.y, time=300*scaleMax})
 			tongueExist = false
 			event.other.pp:caught()
+			allBugs[event.other.pp.allID] = nil
 			event.other.pp:delete()
 		end
 	end
 	
 	mouthHitbox = display.newRect(display.contentCenterX, 854, 80, 80)
+	sceneGroup:insert(mouthHitbox)
 	mouthHitbox.isVisible = false
 	physics.addBody(mouthHitbox, "dynamic", {isSensor=true})
 	mouthHitbox.collision = eatBug
@@ -251,6 +276,7 @@ function scene:create( event )
 	tongueHitbox = display.newRect(display.contentCenterX, 864, 40, 1000)
 	tongueHitbox.isVisible = false
 	tongueGroup:insert(tongueHitbox)
+	sceneGroup:insert(tongueHitbox)
 	tongueHitbox.anchorX = .5
 	tongueHitbox.anchorY = 0
 	physics.addBody(tongueHitbox, "dynamic", {isSensor=true})
@@ -378,6 +404,12 @@ function scene:hide( event )
 		timer.cancel(timer1)
 		timer.cancel(barTimer)
 		audio.stop(3)
+		for _, bug in pairs(allBugs) do
+			if allBugs[bug.allID] ~= nil then
+				bug:delete()
+			end
+		end
+		allBugs = {}
 		-- Called when the scene is on screen (but is about to go off screen).
 		-- Insert code here to "pause" the scene.
 		-- Example: stop timers, stop animation, stop audio, etc.

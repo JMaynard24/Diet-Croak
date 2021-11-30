@@ -24,10 +24,10 @@ function onRetryButton(event)
 
    -- go to game screen
    if event.phase == "began" then
-      if buttonPressAllowed == true then
+      --if buttonPressAllowed == true then
          composer.removeScene("game")
          composer.gotoScene("game")
-      end
+      --end
    end
 
 end
@@ -37,9 +37,9 @@ function onMenuButton(event)
 
    -- go to menu screen
    if event.phase == "began" then
-      if buttonPressAllowed == true then
+     -- if buttonPressAllowed == true then
          composer.gotoScene("menu")
-      end
+      --end
    end
 
 end
